@@ -1,0 +1,204 @@
+{
+  "exportedAt": "ISO-8601 string",
+
+  "collections": {
+    "BusinessAccounts": [
+      {
+        "id": "string (email)",
+
+        "profile": {
+          "userId": "string",
+          "email": "string",
+          "phone": "string",
+          "userName": "string",
+          "createdAt": "ISO-8601 string",
+          "updatedAt": "ISO-8601 string"
+        },
+
+        "businessPlan": {
+          "name": "Lite | Silver | Gold | Elite",
+          "price": "number",
+          "currency": "string"
+        },
+
+        "capabilities": {
+          "maxCustomerNumber": "number",
+          "maxOrderNumber": "number",
+          "maxProductNumber": "number",
+          "canAddOrder": "boolean",
+          "canAddCustomer": "boolean",
+          "canAddProducts": "boolean",
+          "hasExportImportOption": "boolean"
+        },
+
+        "businesses": [
+          {
+            "businessId": "UUID",
+            "businessName": "string",
+            "phone": "string",
+            "plan": "string",
+            "businessAddress": "string",
+            "businessUrl": "string",
+            "createdAt": "ISO-8601 string",
+            "socialLinks": {
+              "whatsapp": "string",
+              "facebook": "string",
+              "youtube": "string"
+            }
+          }
+        ]
+      }
+    ],
+
+    "Plan": [
+      {
+        "id": "Lite | Silver | Gold | Elite",
+        "name": "string",
+        "price": "number",
+        "capabilities": {
+          "maxCustomerNumber": "number",
+          "maxOrderNumber": "number",
+          "maxProductNumber": "number",
+          "canAddOrder": "boolean",
+          "canAddCustomer": "boolean",
+          "canAddProducts": "boolean",
+          "hasExportImportOption": "boolean"
+        }
+      }
+    ],
+
+    "users": [
+      {
+        "id": "string",
+        "email": "string",
+        "role": "admin | business",
+        "status": "enabled | disabled",
+        "userName": "string",
+        "phone": "string",
+        "createdAt": "ISO-8601 string",
+
+        "businessName": "string",
+        "plan": "paid | free",
+        "canCreateOrders": "boolean"
+      }
+    ],
+
+    "activity_logs": [
+      {
+        "id": "string",
+        "action": "apply_preset | update_capability",
+        "timestamp": "ISO-8601 string",
+
+        "adminId": "string",
+        "adminEmail": "string",
+        "targetUserId": "string",
+        "targetUserEmail": "string",
+
+        "details": {
+          "preset": "Lite | Silver | Gold | Elite",
+          "canAddOrder": "boolean"
+        }
+      }
+    ],
+
+    "products": [
+      {
+        "id": "string",
+        "name": "string",
+        "details": "string",
+        "price": "number",
+        "businessId": "string",
+        "createdAt": "ISO-8601 string",
+        "updatedAt": "ISO-8601 string"
+      }
+    ],
+
+    "businessData": [
+      {
+        "businessEmail": "string",
+        "businessName": "string",
+        "rootPath": "string",
+
+        "customers": [
+          {
+            "id": "UUID",
+            "ownerId": "string",
+            "name": "string",
+            "phone": "string",
+            "email": "string",
+            "address": "string",
+            "comment": "string",
+            "rating": "number",
+            "createdAt": "ISO-8601 string",
+            "updatedAt": "ISO-8601 string"
+          }
+        ],
+
+        "orders": [
+          {
+            "id": "string",
+            "businessId": "string",
+            "ownerId": "string",
+            "customerId": "string",
+
+            "status": "pending | completed",
+            "source": "whatsapp | messenger",
+            "address": "string",
+            "notes": "string",
+
+            "orderDate": "ISO-8601 string",
+            "deliveryDate": "ISO-8601 string",
+            "createdAt": "ISO-8601 string",
+            "updatedAt": "ISO-8601 string",
+
+            "hasOrderTime": "boolean",
+            "hasDeliveryTime": "boolean",
+            "deliveryCharge": "number",
+            "totalAmount": "number",
+
+            "products": [
+              {
+                "id": "string",
+                "name": "string",
+                "code": "string",
+                "description": "string",
+                "price": "number",
+                "quantity": "number"
+              }
+            ]
+          }
+        ],
+
+        "products": [
+          {
+            "id": "string",
+            "productId": "string",
+            "businessId": "string",
+            "ownerId": "string",
+            "name": "string",
+            "productName": "string",
+            "code": "string",
+            "details": "string",
+            "price": "number",
+            "createdAt": "ISO-8601 string",
+            "updatedAt": "ISO-8601 string"
+          }
+        ],
+
+        "experiences": [
+          {
+            "id": "string",
+            "ownerId": "string",
+            "customerId": "string",
+            "orderId": "string",
+            "rating": "number",
+            "comment": "string",
+            "createdAt": "ISO-8601 string",
+            "updatedAt": "ISO-8601 string"
+          }
+        ]
+      }
+    ]
+  }
+}
+ 3
