@@ -6,6 +6,7 @@ abstract class CustomerRemoteDataSource {
   Future<List<CustomerModel>> searchCustomers(String businessId, String query);
   Future<CustomerModel?> getCustomerById(String businessId, String customerId);
   Future<CustomerModel> createCustomer(String businessId, CustomerModel customer);
+  Future<void> updateCustomer(String businessId, CustomerModel customer);
 }
 
 class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
@@ -110,5 +111,18 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
       createdAt: customer.createdAt,
       updatedAt: customer.updatedAt,
     );
+  }
+
+  @override
+  Future<void> updateCustomer(
+    String businessId,
+    CustomerModel customer,
+  ) async {
+    await _firestore
+        .collection('BusinessAccounts')
+        .doc(businessId)
+        .collection('customers')
+        .doc(customer.id)
+        .update(customer.toJson());
   }
 }

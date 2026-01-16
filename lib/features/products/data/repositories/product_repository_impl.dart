@@ -68,4 +68,17 @@ class ProductRepositoryImpl implements ProductRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+  @override
+  Future<Either<Failure, void>> updateProduct(
+    String businessId,
+    Product product,
+  ) async {
+    try {
+      final model = ProductModel.fromEntity(product);
+      await _remoteDataSource.updateProduct(businessId, model);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

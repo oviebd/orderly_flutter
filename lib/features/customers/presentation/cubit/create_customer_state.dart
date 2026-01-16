@@ -10,6 +10,8 @@ class CreateCustomerState extends Equatable {
   final String? error;
   final bool isSuccess;
   final Customer? createdCustomer;
+  final Customer? existingCustomer;
+  final bool isEditing;
 
   const CreateCustomerState({
     this.name = '',
@@ -21,6 +23,8 @@ class CreateCustomerState extends Equatable {
     this.error,
     this.isSuccess = false,
     this.createdCustomer,
+    this.existingCustomer,
+    this.isEditing = false,
   });
 
   bool get isValid => name.isNotEmpty && phone.isNotEmpty;
@@ -36,6 +40,8 @@ class CreateCustomerState extends Equatable {
     bool clearError = false,
     bool? isSuccess,
     Customer? createdCustomer,
+    Customer? existingCustomer,
+    bool? isEditing,
   }) {
     return CreateCustomerState(
       name: name ?? this.name,
@@ -47,6 +53,8 @@ class CreateCustomerState extends Equatable {
       error: clearError ? null : (error ?? this.error),
       isSuccess: isSuccess ?? this.isSuccess,
       createdCustomer: createdCustomer ?? this.createdCustomer,
+      existingCustomer: existingCustomer ?? this.existingCustomer,
+      isEditing: isEditing ?? this.isEditing,
     );
   }
 

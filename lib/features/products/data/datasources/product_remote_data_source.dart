@@ -6,6 +6,7 @@ abstract class ProductRemoteDataSource {
   Future<List<ProductModel>> searchProducts(String businessId, String query);
   Future<ProductModel?> getProductById(String businessId, String productId);
   Future<ProductModel> createProduct(String businessId, ProductModel product);
+  Future<void> updateProduct(String businessId, ProductModel product);
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -103,5 +104,18 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
     );
+  }
+
+  @override
+  Future<void> updateProduct(
+    String businessId,
+    ProductModel product,
+  ) async {
+    await _firestore
+        .collection('BusinessAccounts')
+        .doc(businessId)
+        .collection('products')
+        .doc(product.id)
+        .update(product.toJson());
   }
 }

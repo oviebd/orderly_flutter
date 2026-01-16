@@ -23,5 +23,11 @@ abstract class ProductRepository {
     String businessId,
     Product product,
   );
+
+  /// Update an existing product
+  Future<Either<Failure, void>> updateProduct(
+    String businessId,
+    Product product,
+  );
 }
 

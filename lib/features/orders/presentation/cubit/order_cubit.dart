@@ -34,7 +34,7 @@ class OrderCubit extends Cubit<OrderState> {
   }
 
   Future<void> updateStatus(String orderId, String status, String businessId) async {
-    final result = await _orderRepository.updateOrderStatus(orderId, status);
+    final result = await _orderRepository.updateOrderStatus(businessId, orderId, status);
     result.fold(
       (failure) => emit(OrderError(failure.message)),
       (_) => fetchOrders(businessId), // Refresh

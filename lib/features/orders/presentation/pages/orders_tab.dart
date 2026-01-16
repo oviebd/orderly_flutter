@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../cubit/order_cubit.dart'; // Ensure correct import
 import '../widgets/order_card.dart';
+import 'order_details_page.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -135,7 +136,25 @@ class _OrdersTabState extends State<OrdersTab> {
                       itemCount: filteredOrders.length,
                       itemBuilder: (context, index) {
                         final order = filteredOrders[index];
-                        return OrderCard(order: order);
+                        return InkWell(
+                          onTap: () {
+                            final orderCubit = context.read<OrderCubit>();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => BlocProvider.value(
+                                  value: orderCubit,
+                                  child: OrderDetailsPage(order: order),
+                                ),
+                              ),
+                            ).then((_) {
+                              if (context.mounted) {
+                                orderCubit.fetchOrders(email);
+                              }
+                            });
+                          },
+                          child: OrderCard(order: order),
+                        );
                       },
                     );
                   } else if (state is OrderError) {

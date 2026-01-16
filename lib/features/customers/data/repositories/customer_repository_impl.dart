@@ -68,4 +68,17 @@ class CustomerRepositoryImpl implements CustomerRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+  @override
+  Future<Either<Failure, void>> updateCustomer(
+    String businessId,
+    Customer customer,
+  ) async {
+    try {
+      final model = CustomerModel.fromEntity(customer);
+      await _remoteDataSource.updateCustomer(businessId, model);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

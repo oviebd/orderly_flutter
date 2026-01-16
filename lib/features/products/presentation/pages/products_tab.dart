@@ -4,6 +4,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../domain/entities/product.dart';
 import '../cubit/products_cubit.dart';
 import 'create_product_page.dart';
+import 'product_details_page.dart';
 
 class ProductsTab extends StatelessWidget {
   const ProductsTab({super.key});
@@ -139,7 +140,11 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final product = state.products[index];
-          return _buildProductCard(product);
+          return InkWell(
+            onTap: () => _navigateToProductDetails(context, product),
+            borderRadius: BorderRadius.circular(16),
+            child: _buildProductCard(product),
+          );
         },
       ),
     );
@@ -377,6 +382,17 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
 
     if (result != null && context.mounted) {
       context.read<ProductsCubit>().addProductToList(result);
+    }
+  }
+
+  Future<void> _navigateToProductDetails(BuildContext context, Product product) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => ProductDetailsPage(product: product)),
+    );
+    // Refresh list if needed when coming back
+    if (context.mounted) {
+      context.read<ProductsCubit>().loadProducts();
     }
   }
 }

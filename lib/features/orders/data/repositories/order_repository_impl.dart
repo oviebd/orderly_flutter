@@ -108,9 +108,42 @@ class OrderRepositoryImpl implements OrderRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateOrderStatus(String orderId, String status) async {
+  Future<Either<Failure, void>> updateOrder(Order order) async {
     try {
-      await _remoteDataSource.updateOrderStatus(orderId, status);
+      final orderModel = OrderModel(
+        id: order.id,
+        businessId: order.businessId,
+        ownerId: order.ownerId,
+        customerId: order.customerId,
+        status: order.status,
+        source: order.source,
+        address: order.address,
+        notes: order.notes,
+        orderDate: order.orderDate,
+        deliveryDate: order.deliveryDate,
+        deliveryCharge: order.deliveryCharge,
+        totalAmount: order.totalAmount,
+        products: order.products
+            .map((e) => OrderItemModel(
+                  id: e.id,
+                  name: e.name,
+                  code: e.code,
+                  price: e.price,
+                  quantity: e.quantity,
+                ))
+            .toList(),
+      );
+      await _remoteDataSource.updateOrder(orderModel);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateOrderStatus(String businessId, String orderId, String status) async {
+    try {
+      await _remoteDataSource.updateOrderStatus(businessId, orderId, status);
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

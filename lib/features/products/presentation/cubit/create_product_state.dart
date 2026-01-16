@@ -9,6 +9,8 @@ class CreateProductState extends Equatable {
   final String? error;
   final bool isSuccess;
   final Product? createdProduct;
+  final Product? existingProduct;
+  final bool isEditing;
 
   const CreateProductState({
     this.name = '',
@@ -19,6 +21,8 @@ class CreateProductState extends Equatable {
     this.error,
     this.isSuccess = false,
     this.createdProduct,
+    this.existingProduct,
+    this.isEditing = false,
   });
 
   bool get isValid => name.isNotEmpty && price > 0;
@@ -33,6 +37,8 @@ class CreateProductState extends Equatable {
     bool clearError = false,
     bool? isSuccess,
     Product? createdProduct,
+    Product? existingProduct,
+    bool? isEditing,
   }) {
     return CreateProductState(
       name: name ?? this.name,
@@ -43,6 +49,8 @@ class CreateProductState extends Equatable {
       error: clearError ? null : (error ?? this.error),
       isSuccess: isSuccess ?? this.isSuccess,
       createdProduct: createdProduct ?? this.createdProduct,
+      existingProduct: existingProduct ?? this.existingProduct,
+      isEditing: isEditing ?? this.isEditing,
     );
   }
 

@@ -18,6 +18,17 @@ class CreateProductCubit extends Cubit<CreateProductState> {
   String get _businessId => FirebaseAuth.instance.currentUser?.email ?? '';
   String get _ownerId => FirebaseAuth.instance.currentUser?.uid ?? '';
 
+  void initForEdit(Product product) {
+    emit(state.copyWith(
+      name: product.name,
+      code: product.code,
+      price: product.price,
+      details: product.details,
+      existingProduct: product,
+      isEditing: true,
+    ));
+  }
+
   void setName(String name) {
     emit(state.copyWith(name: name));
   }
@@ -44,18 +55,20 @@ class CreateProductCubit extends Cubit<CreateProductState> {
 
     try {
       final product = Product(
-        id: '',
+        id: state.isEditing ? state.existingProduct!.id : '',
         businessId: _businessId,
         ownerId: _ownerId,
         name: state.name,
         code: state.code,
         details: state.details,
         price: state.price,
-        createdAt: DateTime.now(),
+        createdAt: state.isEditing ? state.existingProduct!.createdAt : DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
-      final result = await _productRepository.createProduct(_businessId, product);
+      final result = state.isEditing
+          ? await _productRepository.updateProduct(_businessId, product)
+          : await _productRepository.createProduct(_businessId, product);
 
       result.fold(
         (failure) => emit(state.copyWith(
@@ -65,7 +78,7 @@ class CreateProductCubit extends Cubit<CreateProductState> {
         (created) => emit(state.copyWith(
           isSubmitting: false,
           isSuccess: true,
-          createdProduct: created,
+          createdProduct: state.isEditing ? product : (created as Product),
         )),
       );
     } catch (e) {

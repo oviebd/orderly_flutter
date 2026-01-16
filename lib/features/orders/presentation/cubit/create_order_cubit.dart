@@ -32,6 +32,48 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
   String get _ownerId =>
       FirebaseAuth.instance.currentUser?.uid ?? '';
 
+  void initForEdit(Order order) {
+    final productsList = order.products
+        .map((p) => OrderProductItem(
+              productId: p.id,
+              name: p.name,
+              code: p.code,
+              price: p.price,
+              quantity: p.quantity,
+            ))
+        .toList();
+
+    OrderSource source;
+    try {
+      source = OrderSource.values.firstWhere(
+        (e) => e.name.toLowerCase() == order.source.toLowerCase(),
+        orElse: () => OrderSource.whatsapp,
+      );
+    } catch (_) {
+      source = OrderSource.whatsapp;
+    }
+
+    emit(state.copyWith(
+      selectedCustomer: SelectedCustomer(
+        customerId: order.customerId,
+        phone: '', // We don't have phone in Order entity directly, usually fetched
+        name: order.customerName ?? '',
+        address: order.address,
+        isExisting: true,
+      ),
+      orderSource: source,
+      products: productsList,
+      deliveryCharge: order.deliveryCharge,
+      orderDate: order.orderDate,
+      orderTime: TimeOfDay(hour: order.orderDate.hour, minute: order.orderDate.minute),
+      deliveryDate: order.deliveryDate,
+      deliveryTime: TimeOfDay(hour: order.deliveryDate.hour, minute: order.deliveryDate.minute),
+      notes: order.notes,
+      existingOrder: order,
+      isEditing: true,
+    ));
+  }
+
   // ==================== Customer Methods ====================
 
   Future<void> searchCustomers(String query) async {
@@ -312,12 +354,12 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
 
       // Create order
       final order = Order(
-        id: '',
+        id: state.isEditing ? state.existingOrder!.id : '',
         businessId: _businessId,
         ownerId: _ownerId,
         customerId: customerId,
         customerName: state.selectedCustomer!.name,
-        status: 'pending',
+        status: state.isEditing ? state.existingOrder!.status : 'pending',
         source: state.orderSource.name,
         address: state.selectedCustomer!.address,
         notes: state.notes,
@@ -336,7 +378,9 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
             .toList(),
       );
 
-      final result = await _orderRepository.createOrder(order);
+      final result = state.isEditing
+          ? await _orderRepository.updateOrder(order)
+          : await _orderRepository.createOrder(order);
 
       result.fold(
         (failure) => emit(state.copyWith(

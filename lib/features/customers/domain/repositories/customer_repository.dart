@@ -23,5 +23,11 @@ abstract class CustomerRepository {
     String businessId,
     Customer customer,
   );
+
+  /// Update an existing customer
+  Future<Either<Failure, void>> updateCustomer(
+    String businessId,
+    Customer customer,
+  );
 }
 

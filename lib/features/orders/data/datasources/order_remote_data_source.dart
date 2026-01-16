@@ -5,7 +5,8 @@ import '../../domain/entities/order.dart';
 abstract class OrderRemoteDataSource {
   Future<List<OrderModel>> getOrders(String businessId);
   Future<void> createOrder(OrderModel order);
-  Future<void> updateOrderStatus(String orderId, String status);
+  Future<void> updateOrder(OrderModel order);
+  Future<void> updateOrderStatus(String businessId, String orderId, String status);
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -55,12 +56,22 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   }
 
   @override
-  Future<void> updateOrderStatus(String orderId, String status) async {
-    // We need the businessId (email) to construct the path.
-    // Method signature only has orderId.
-    // This is a problem. We need businessId to find the document if it's nested.
-    // Or we use collectionGroup? collectionGroup('orders') is possible but can be dangerous or require index.
-    // Better to update interface to accept businessId.
-    throw UnimplementedError("Update requires businessId (email) for nested path."); 
+  Future<void> updateOrder(OrderModel order) async {
+    await _firestore
+        .collection('BusinessAccounts')
+        .doc(order.businessId)
+        .collection('orders')
+        .doc(order.id)
+        .update(order.toJson());
+  }
+
+  @override
+  Future<void> updateOrderStatus(String businessId, String orderId, String status) async {
+    await _firestore
+        .collection('BusinessAccounts')
+        .doc(businessId)
+        .collection('orders')
+        .doc(orderId)
+        .update({'status': status});
   }
 }

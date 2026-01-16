@@ -4,6 +4,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../domain/entities/customer.dart';
 import '../cubit/customers_cubit.dart';
 import 'create_customer_page.dart';
+import 'customer_details_page.dart';
 
 class CustomersTab extends StatelessWidget {
   const CustomersTab({super.key});
@@ -139,7 +140,11 @@ class _CustomersTabViewState extends State<_CustomersTabView> {
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final customer = state.customers[index];
-          return _buildCustomerCard(customer);
+          return InkWell(
+            onTap: () => _navigateToCustomerDetails(context, customer),
+            borderRadius: BorderRadius.circular(16),
+            child: _buildCustomerCard(customer),
+          );
         },
       ),
     );
@@ -376,6 +381,17 @@ class _CustomersTabViewState extends State<_CustomersTabView> {
 
     if (result != null && context.mounted) {
       context.read<CustomersCubit>().addCustomerToList(result);
+    }
+  }
+
+  Future<void> _navigateToCustomerDetails(BuildContext context, Customer customer) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => CustomerDetailsPage(customer: customer)),
+    );
+    // Refresh list if needed when coming back
+    if (context.mounted) {
+      context.read<CustomersCubit>().loadCustomers();
     }
   }
 }

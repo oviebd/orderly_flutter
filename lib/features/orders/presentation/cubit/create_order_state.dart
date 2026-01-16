@@ -112,6 +112,8 @@ class CreateOrderState extends Equatable {
   final bool isSubmitting;
   final String? error;
   final bool isSuccess;
+  final Order? existingOrder;
+  final bool isEditing;
 
   const CreateOrderState({
     this.selectedCustomer,
@@ -130,6 +132,8 @@ class CreateOrderState extends Equatable {
     this.isSubmitting = false,
     this.error,
     this.isSuccess = false,
+    this.existingOrder,
+    this.isEditing = false,
   });
 
   factory CreateOrderState.initial() {
@@ -173,6 +177,8 @@ class CreateOrderState extends Equatable {
     String? error,
     bool clearError = false,
     bool? isSuccess,
+    Order? existingOrder,
+    bool? isEditing,
   }) {
     return CreateOrderState(
       selectedCustomer: clearCustomer ? null : (selectedCustomer ?? this.selectedCustomer),
@@ -191,6 +197,8 @@ class CreateOrderState extends Equatable {
       isSubmitting: isSubmitting ?? this.isSubmitting,
       error: clearError ? null : (error ?? this.error),
       isSuccess: isSuccess ?? this.isSuccess,
+      existingOrder: existingOrder ?? this.existingOrder,
+      isEditing: isEditing ?? this.isEditing,
     );
   }
 
@@ -212,5 +220,7 @@ class CreateOrderState extends Equatable {
         isSubmitting,
         error,
         isSuccess,
+        existingOrder,
+        isEditing,
       ];
 }

@@ -18,6 +18,18 @@ class CreateCustomerCubit extends Cubit<CreateCustomerState> {
   String get _businessId => FirebaseAuth.instance.currentUser?.email ?? '';
   String get _ownerId => FirebaseAuth.instance.currentUser?.uid ?? '';
 
+  void initForEdit(Customer customer) {
+    emit(state.copyWith(
+      name: customer.name,
+      phone: customer.phone,
+      email: customer.email,
+      address: customer.address,
+      comment: customer.comment,
+      existingCustomer: customer,
+      isEditing: true,
+    ));
+  }
+
   void setName(String name) {
     emit(state.copyWith(name: name));
   }
@@ -48,18 +60,20 @@ class CreateCustomerCubit extends Cubit<CreateCustomerState> {
 
     try {
       final customer = Customer(
-        id: '',
+        id: state.isEditing ? state.existingCustomer!.id : '',
         ownerId: _ownerId,
         name: state.name,
         phone: state.phone,
         email: state.email,
         address: state.address,
         comment: state.comment,
-        createdAt: DateTime.now(),
+        createdAt: state.isEditing ? state.existingCustomer!.createdAt : DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
-      final result = await _customerRepository.createCustomer(_businessId, customer);
+      final result = state.isEditing
+          ? await _customerRepository.updateCustomer(_businessId, customer)
+          : await _customerRepository.createCustomer(_businessId, customer);
 
       result.fold(
         (failure) => emit(state.copyWith(
@@ -69,7 +83,7 @@ class CreateCustomerCubit extends Cubit<CreateCustomerState> {
         (created) => emit(state.copyWith(
           isSubmitting: false,
           isSuccess: true,
-          createdCustomer: created,
+          createdCustomer: state.isEditing ? customer : (created as Customer),
         )),
       );
     } catch (e) {
