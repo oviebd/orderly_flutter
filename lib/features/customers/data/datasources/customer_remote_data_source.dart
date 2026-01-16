@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/customer_model.dart';
 
 abstract class CustomerRemoteDataSource {
+  Future<List<CustomerModel>> getCustomers(String businessId);
   Future<List<CustomerModel>> searchCustomers(String businessId, String query);
   Future<CustomerModel?> getCustomerById(String businessId, String customerId);
   Future<CustomerModel> createCustomer(String businessId, CustomerModel customer);
@@ -11,6 +12,20 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
   final FirebaseFirestore _firestore;
 
   CustomerRemoteDataSourceImpl(this._firestore);
+
+  @override
+  Future<List<CustomerModel>> getCustomers(String businessId) async {
+    final snapshot = await _firestore
+        .collection('BusinessAccounts')
+        .doc(businessId)
+        .collection('customers')
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => CustomerModel.fromJson(doc.data(), doc.id))
+        .toList();
+  }
 
   @override
   Future<List<CustomerModel>> searchCustomers(

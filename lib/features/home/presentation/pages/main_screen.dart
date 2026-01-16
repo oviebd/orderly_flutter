@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../orders/presentation/pages/create_order_page.dart';
 import '../../../orders/presentation/pages/orders_tab.dart';
+import '../../../customers/presentation/pages/customers_tab.dart';
+import '../../../products/presentation/pages/products_tab.dart';
 import 'dashboard_tab.dart';
 
 class MainScreen extends StatefulWidget {
@@ -19,8 +20,8 @@ class _MainScreenState extends State<MainScreen> {
     const DashboardTab(),
     const OrdersTab(),
     const SizedBox(), // Placeholder for center button action
-    const Center(child: Text("Customers (Coming Soon)")),
-    const Center(child: Text("Profile (Coming Soon)")),
+    const ProductsTab(),
+    const CustomersTab(),
   ];
 
   void _onTabTapped(int index) {
@@ -57,10 +58,11 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(Icons.add_circle, size: 40, color: AppColors.primary),
             label: '',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.inventory_2_outlined), label: 'Products'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Customers'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );
   }
 }
+

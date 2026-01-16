@@ -3,6 +3,9 @@ import '../../../../core/error/failures.dart';
 import '../entities/product.dart';
 
 abstract class ProductRepository {
+  /// Get all products for a business
+  Future<Either<Failure, List<Product>>> getProducts(String businessId);
+
   /// Search products by name or code
   Future<Either<Failure, List<Product>>> searchProducts(
     String businessId,
@@ -21,3 +24,4 @@ abstract class ProductRepository {
     Product product,
   );
 }
+

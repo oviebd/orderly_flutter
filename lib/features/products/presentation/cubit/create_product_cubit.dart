@@ -1,0 +1,82 @@
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../domain/entities/product.dart';
+import '../../domain/repositories/product_repository.dart';
+
+part 'create_product_state.dart';
+
+class CreateProductCubit extends Cubit<CreateProductState> {
+  final ProductRepository _productRepository;
+
+  CreateProductCubit({
+    required ProductRepository productRepository,
+  })  : _productRepository = productRepository,
+        super(const CreateProductState());
+
+  String get _businessId => FirebaseAuth.instance.currentUser?.email ?? '';
+  String get _ownerId => FirebaseAuth.instance.currentUser?.uid ?? '';
+
+  void setName(String name) {
+    emit(state.copyWith(name: name));
+  }
+
+  void setCode(String code) {
+    emit(state.copyWith(code: code));
+  }
+
+  void setPrice(double price) {
+    emit(state.copyWith(price: price));
+  }
+
+  void setDetails(String details) {
+    emit(state.copyWith(details: details));
+  }
+
+  Future<void> submitProduct() async {
+    if (!state.isValid) {
+      emit(state.copyWith(error: 'Please fill in all required fields'));
+      return;
+    }
+
+    emit(state.copyWith(isSubmitting: true, clearError: true));
+
+    try {
+      final product = Product(
+        id: '',
+        businessId: _businessId,
+        ownerId: _ownerId,
+        name: state.name,
+        code: state.code,
+        details: state.details,
+        price: state.price,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      final result = await _productRepository.createProduct(_businessId, product);
+
+      result.fold(
+        (failure) => emit(state.copyWith(
+          isSubmitting: false,
+          error: failure.message,
+        )),
+        (created) => emit(state.copyWith(
+          isSubmitting: false,
+          isSuccess: true,
+          createdProduct: created,
+        )),
+      );
+    } catch (e) {
+      emit(state.copyWith(
+        isSubmitting: false,
+        error: e.toString(),
+      ));
+    }
+  }
+
+  void clearError() {
+    emit(state.copyWith(clearError: true));
+  }
+}

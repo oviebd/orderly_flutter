@@ -3,6 +3,9 @@ import '../../../../core/error/failures.dart';
 import '../entities/customer.dart';
 
 abstract class CustomerRepository {
+  /// Get all customers for a business
+  Future<Either<Failure, List<Customer>>> getCustomers(String businessId);
+
   /// Search customers by phone number or name
   Future<Either<Failure, List<Customer>>> searchCustomers(
     String businessId,
@@ -21,3 +24,4 @@ abstract class CustomerRepository {
     Customer customer,
   );
 }
+

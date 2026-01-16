@@ -15,10 +15,14 @@ import '../../features/orders/data/datasources/order_remote_data_source.dart';
 import '../../features/customers/domain/repositories/customer_repository.dart';
 import '../../features/customers/data/repositories/customer_repository_impl.dart';
 import '../../features/customers/data/datasources/customer_remote_data_source.dart';
+import '../../features/customers/presentation/cubit/create_customer_cubit.dart';
+import '../../features/customers/presentation/cubit/customers_cubit.dart';
 
 import '../../features/products/domain/repositories/product_repository.dart';
 import '../../features/products/data/repositories/product_repository_impl.dart';
 import '../../features/products/data/datasources/product_remote_data_source.dart';
+import '../../features/products/presentation/cubit/create_product_cubit.dart';
+import '../../features/products/presentation/cubit/products_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -37,10 +41,14 @@ Future<void> init() async {
   // Customer Feature
   sl.registerLazySingleton<CustomerRepository>(() => CustomerRepositoryImpl(sl()));
   sl.registerLazySingleton<CustomerRemoteDataSource>(() => CustomerRemoteDataSourceImpl(sl()));
+  sl.registerFactory(() => CreateCustomerCubit(customerRepository: sl()));
+  sl.registerFactory(() => CustomersCubit(customerRepository: sl()));
   
   // Product Feature
   sl.registerLazySingleton<ProductRepository>(() => ProductRepositoryImpl(sl()));
   sl.registerLazySingleton<ProductRemoteDataSource>(() => ProductRemoteDataSourceImpl(sl()));
+  sl.registerFactory(() => CreateProductCubit(productRepository: sl()));
+  sl.registerFactory(() => ProductsCubit(productRepository: sl()));
   
   // Order Feature
   sl.registerFactory(() => OrderCubit(sl()));
