@@ -24,9 +24,19 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, void>> signUp({required String email, required String password}) async {
+  Future<Either<Failure, void>> signUp({
+    required String email,
+    required String password,
+    required String userName,
+    String phone = '',
+  }) async {
     try {
-      await _remoteDataSource.signUp(email, password);
+      await _remoteDataSource.signUp(
+        email: email,
+        password: password,
+        userName: userName,
+        phone: phone,
+      );
       return const Right(null);
     } on FirebaseAuthException catch (e) {
       return Left(ServerFailure(e.message ?? 'Sign up failed'));
@@ -48,4 +58,38 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Stream<String?> get onAuthStateChanged => _remoteDataSource.onAuthStateChanged;
+
+  @override
+  Future<Either<Failure, bool>> checkHasBusiness(String email) async {
+    try {
+      final hasBusiness = await _remoteDataSource.checkHasBusiness(email);
+      return Right(hasBusiness);
+    } catch (e) {
+      debugPrint('CheckHasBusiness Error: $e');
+      return Left(ServerFailure('Failed to check business: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> registerBusiness({
+    required String email,
+    required String businessName,
+    required String phone,
+    required String userId,
+    required String userName,
+  }) async {
+    try {
+      await _remoteDataSource.registerBusiness(
+        email: email,
+        businessName: businessName,
+        phone: phone,
+        userId: userId,
+        userName: userName,
+      );
+      return const Right(null);
+    } catch (e) {
+      debugPrint('RegisterBusiness Error: $e');
+      return Left(ServerFailure('Failed to register business: $e'));
+    }
+  }
 }

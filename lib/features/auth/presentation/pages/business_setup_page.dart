@@ -2,33 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../cubit/auth_cubit.dart';
-import '../../../../core/navigation/app_routes.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class BusinessSetupPage extends StatefulWidget {
+  const BusinessSetupPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<BusinessSetupPage> createState() => _BusinessSetupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+class _BusinessSetupPageState extends State<BusinessSetupPage> {
   final _formKey = GlobalKey<FormState>();
-  bool _isPasswordVisible = false;
+  final _businessNameController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _businessNameController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
-  void _onLoginPressed() {
+  void _onRegisterPressed() {
     if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthCubit>().signIn(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
+      context.read<AuthCubit>().registerBusiness(
+            businessName: _businessNameController.text.trim(),
+            phone: _phoneController.text.trim(),
           );
     }
   }
@@ -46,6 +44,9 @@ class _LoginPageState extends State<LoginPage> {
           }
         },
         builder: (context, state) {
+          final needsBusinessState = state is NeedsBusiness ? state : null;
+          final email = needsBusinessState?.email ?? '';
+
           return SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -60,18 +61,18 @@ class _LoginPageState extends State<LoginPage> {
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Icon(Icons.inventory_2_rounded, color: Colors.white, size: 32),
+                      child: const Icon(Icons.business_center_rounded, color: Colors.white, size: 32),
                     ),
                     const SizedBox(height: 24),
 
                     // Title
                     const Text(
-                      'OrderFlow',
-                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                      'Setup Business Profile',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Simple order management for small businesses',
+                      'Tell us about your business to get started',
                       style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                       textAlign: TextAlign.center,
                     ),
@@ -97,47 +98,64 @@ class _LoginPageState extends State<LoginPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Welcome back',
+                              'Business Details',
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Sign in to continue managing your orders',
+                              'We need a few more details to set up your OrderFlow account.',
                               style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
                             ),
                             const SizedBox(height: 24),
 
-                            // Email
+                            // Email (Read-only)
                             _buildLabel('Email'),
                             const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      email,
+                                      style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                                    ),
+                                  ),
+                                  Icon(Icons.lock_outline, size: 18, color: Colors.grey.shade400),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Business Name
+                            _buildLabel('Business Name'),
+                            const SizedBox(height: 8),
                             TextFormField(
-                              controller: _emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: _buildInputDecoration('hello@example.com'),
+                              controller: _businessNameController,
+                              decoration: _buildInputDecoration('e.g., Sweet Delights Bakery'),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
+                                  return 'Please enter your business name';
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 16),
 
-                            // Password
-                            _buildLabel('Password'),
+                            // Phone Number
+                            _buildLabel('Phone Number'),
                             const SizedBox(height: 8),
                             TextFormField(
-                              controller: _passwordController,
-                              obscureText: !_isPasswordVisible,
-                              decoration: _buildInputDecoration('••••••••').copyWith(
-                                suffixIcon: IconButton(
-                                  icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off, color: Colors.grey),
-                                  onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-                                ),
-                              ),
+                              controller: _phoneController,
+                              keyboardType: TextInputType.phone,
+                              decoration: _buildInputDecoration('+1234567890'),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your password';
+                                  return 'Please enter your phone number';
                                 }
                                 return null;
                               },
@@ -148,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: state is AuthLoading ? null : _onLoginPressed,
+                                onPressed: state is AuthLoading ? null : _onRegisterPressed,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary,
                                   foregroundColor: Colors.white,
@@ -158,32 +176,12 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 child: state is AuthLoading
                                     ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                    : const Text('Sign In', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                    : const Text('Complete Registration', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                               ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Sign Up Link
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text("Don't have an account? ", style: TextStyle(color: Colors.grey.shade600)),
-                                GestureDetector(
-                                  onTap: () => Navigator.pushNamed(context, AppRoutes.signup),
-                                  child: const Text('Sign up', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                                ),
-                              ],
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Free plan note
-                    Text(
-                      'Free plan includes 50 orders per month',
-                      style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
                     ),
                   ],
                 ),

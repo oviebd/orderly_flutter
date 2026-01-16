@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orderly/features/auth/presentation/pages/login_page.dart';
+import 'package:orderly/features/auth/presentation/pages/signup_page.dart';
+import 'package:orderly/features/auth/presentation/pages/business_setup_page.dart';
 import 'package:orderly/features/home/presentation/pages/main_screen.dart';
 import 'package:orderly/features/orders/domain/entities/order.dart';
 import 'package:orderly/features/orders/presentation/cubit/order_cubit.dart';
@@ -32,6 +34,12 @@ class RouteGenerator {
       
       case AppRoutes.login:
         return MaterialPageRoute(builder: (_) => const LoginPage());
+      
+      case AppRoutes.signup:
+        return MaterialPageRoute(builder: (_) => const SignupPage());
+      
+      case AppRoutes.businessSetup:
+        return MaterialPageRoute(builder: (_) => const BusinessSetupPage());
       
       case AppRoutes.home:
         return MaterialPageRoute(builder: (_) => const MainScreen());

@@ -13,11 +13,27 @@ class AuthLoading extends AuthState {}
 
 class Authenticated extends AuthState {
   final String userId;
+  final String email;
 
-  const Authenticated(this.userId);
+  const Authenticated(this.userId, this.email);
 
   @override
-  List<Object> get props => [userId];
+  List<Object> get props => [userId, email];
+}
+
+class NeedsBusiness extends AuthState {
+  final String userId;
+  final String email;
+  final String userName;
+
+  const NeedsBusiness({
+    required this.userId,
+    required this.email,
+    required this.userName,
+  });
+
+  @override
+  List<Object> get props => [userId, email, userName];
 }
 
 class Unauthenticated extends AuthState {}

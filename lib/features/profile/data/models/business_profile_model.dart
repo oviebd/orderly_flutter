@@ -30,6 +30,14 @@ class BusinessProfileModel extends BusinessProfile {
 
     final socialLinks = business['socialLinks'] as Map<String, dynamic>? ?? {};
 
+    // Helper to parse date that can be Timestamp or String
+    DateTime parseDate(dynamic value) {
+      if (value == null) return DateTime.now();
+      if (value is Timestamp) return value.toDate();
+      if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+      return DateTime.now();
+    }
+
     return BusinessProfileModel(
       userId: profile['userId'] ?? '',
       businessId: business['businessId'],
@@ -43,11 +51,9 @@ class BusinessProfileModel extends BusinessProfile {
       facebook: socialLinks['facebook'],
       youtube: socialLinks['youtube'],
       plan: business['plan'] ?? 'Lite',
-      createdAt: (profile['createdAt'] != null)
-          ? (profile['createdAt'] as Timestamp).toDate()
-          : (business['createdAt'] != null)
-              ? (business['createdAt'] as Timestamp).toDate()
-              : DateTime.now(),
+      createdAt: profile['createdAt'] != null 
+          ? parseDate(profile['createdAt']) 
+          : parseDate(business['createdAt']),
     );
   }
 

@@ -2,33 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../cubit/auth_cubit.dart';
-import '../../../../core/navigation/app_routes.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _onLoginPressed() {
+  void _onSignUpPressed() {
     if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthCubit>().signIn(
+      context.read<AuthCubit>().signUp(
             email: _emailController.text.trim(),
             password: _passwordController.text,
+            userName: _nameController.text.trim(),
           );
     }
   }
@@ -43,6 +48,11 @@ class _LoginPageState extends State<LoginPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message), backgroundColor: AppColors.error),
             );
+          }
+          // After successful signup, user will be in NeedsBusiness state
+          // Pop back to root so main.dart's BlocBuilder shows BusinessSetupPage
+          if (state is NeedsBusiness || state is Authenticated) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
           }
         },
         builder: (context, state) {
@@ -97,15 +107,30 @@ class _LoginPageState extends State<LoginPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Welcome back',
+                              'Create an account',
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Sign in to continue managing your orders',
+                              'Enter your details to get started',
                               style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
                             ),
                             const SizedBox(height: 24),
+
+                            // Full Name
+                            _buildLabel('Full Name'),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _nameController,
+                              decoration: _buildInputDecoration('John Doe'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your name';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
 
                             // Email
                             _buildLabel('Email'),
@@ -117,6 +142,9 @@ class _LoginPageState extends State<LoginPage> {
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter your email';
+                                }
+                                if (!value.contains('@')) {
+                                  return 'Please enter a valid email';
                                 }
                                 return null;
                               },
@@ -137,7 +165,31 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your password';
+                                  return 'Please enter a password';
+                                }
+                                if (value.length < 6) {
+                                  return 'Password must be at least 6 characters';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Confirm Password
+                            _buildLabel('Confirm Password'),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _confirmPasswordController,
+                              obscureText: !_isConfirmPasswordVisible,
+                              decoration: _buildInputDecoration('••••••••').copyWith(
+                                suffixIcon: IconButton(
+                                  icon: Icon(_isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off, color: Colors.grey),
+                                  onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value != _passwordController.text) {
+                                  return 'Passwords do not match';
                                 }
                                 return null;
                               },
@@ -148,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: state is AuthLoading ? null : _onLoginPressed,
+                                onPressed: state is AuthLoading ? null : _onSignUpPressed,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary,
                                   foregroundColor: Colors.white,
@@ -158,19 +210,19 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 child: state is AuthLoading
                                     ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                    : const Text('Sign In', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                    : const Text('Create Account', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                               ),
                             ),
                             const SizedBox(height: 16),
 
-                            // Sign Up Link
+                            // Sign In Link
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text("Don't have an account? ", style: TextStyle(color: Colors.grey.shade600)),
+                                Text('Already have an account? ', style: TextStyle(color: Colors.grey.shade600)),
                                 GestureDetector(
-                                  onTap: () => Navigator.pushNamed(context, AppRoutes.signup),
-                                  child: const Text('Sign up', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                                  onTap: () => Navigator.pop(context),
+                                  child: const Text('Sign in', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
                                 ),
                               ],
                             ),

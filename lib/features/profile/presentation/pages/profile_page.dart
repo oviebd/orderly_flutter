@@ -318,7 +318,13 @@ class ProfileView extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
-        onPressed: () => context.read<AuthCubit>().signOut(),
+        onPressed: () async {
+          await context.read<AuthCubit>().signOut();
+          // Pop all routes to return to the root where main.dart's BlocBuilder will show LoginPage
+          if (context.mounted) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
+        },
         icon: const Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
         label: const Text('Logout Account', style: TextStyle(color: Color(0xFFEF4444))),
         style: OutlinedButton.styleFrom(

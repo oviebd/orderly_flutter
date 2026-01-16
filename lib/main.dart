@@ -7,8 +7,8 @@ import 'firebase_options.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/auth/presentation/pages/login_page.dart';
+import 'features/auth/presentation/pages/business_setup_page.dart';
 import 'features/home/presentation/pages/main_screen.dart';
-import 'core/navigation/app_routes.dart';
 import 'core/navigation/route_generator.dart';
 
 void main() async {
@@ -41,8 +41,16 @@ class OrderlyApp extends StatelessWidget {
         onGenerateRoute: RouteGenerator.generateRoute,
         home: BlocBuilder<AuthCubit, AuthState>(
           builder: (context, state) {
+            if (state is AuthLoading) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
             if (state is Authenticated) {
               return const MainScreen();
+            }
+            if (state is NeedsBusiness) {
+              return const BusinessSetupPage();
             }
             return const LoginPage();
           },

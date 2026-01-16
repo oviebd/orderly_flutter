@@ -1,0 +1,863 @@
+{
+  "exportedAt": "2026-01-14T15:26:18.390Z",
+  "collections": {
+    "BusinessAccounts": [
+      {
+        "id": "business_01@gmail.com",
+        "profile": {
+          "updatedAt": "2026-01-12T03:43:52.602Z",
+          "userName": "",
+          "phone": "123456",
+          "createdAt": "2026-01-12T03:43:52.602Z",
+          "userId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+          "email": "business_01@gmail.com"
+        },
+        "businesses": [
+          {
+            "businessId": "61c5b4a1-b540-4ebb-ba37-dad77683039b",
+            "businessName": "Business_02",
+            "createdAt": "2026-01-12T03:43:52.602Z",
+            "phone": "123456",
+            "socialLinks": {
+              "whatsapp": "",
+              "facebook": "",
+              "youtube": ""
+            },
+            "businessAddress": "",
+            "businessUrl": "",
+            "plan": "free"
+          }
+        ]
+      },
+      {
+        "id": "business_03@gmail.com",
+        "businessPlan": {
+          "name": "Lite",
+          "price": 0,
+          "currency": "BDT"
+        },
+        "capabilities": {
+          "maxCustomerNumber": 10,
+          "maxOrderNumber": 1000,
+          "canAddOrder": true,
+          "canAddCustomer": true,
+          "canAddProducts": true,
+          "hasExportImportOption": false,
+          "maxProductNumber": 10
+        },
+        "businesses": [
+          {
+            "createdAt": "2026-01-14T04:23:02.291Z",
+            "plan": "free",
+            "businessName": "Business 03 ",
+            "businessId": "22b38dbd-4339-4fee-9d78-14c040b87293",
+            "businessUrl": "",
+            "businessAddress": "",
+            "socialLinks": {
+              "facebook": "",
+              "youtube": "",
+              "whatsapp": ""
+            },
+            "phone": "123456789"
+          }
+        ],
+        "profile": {
+          "userName": "",
+          "updatedAt": "2026-01-14T04:23:02.291Z",
+          "userId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+          "phone": "123456789",
+          "email": "business_03@gmail.com",
+          "createdAt": "2026-01-14T04:23:02.291Z"
+        }
+      },
+      {
+        "id": "habibur@example.com",
+        "businessPlan": {
+          "currency": "BDT",
+          "name": "Gold",
+          "price": 2490
+        },
+        "capabilities": {
+          "maxProductNumber": 200,
+          "canAddOrder": true,
+          "hasExportImportOption": true,
+          "canAddCustomer": true,
+          "canAddProducts": true,
+          "maxCustomerNumber": 200,
+          "maxOrderNumber": 500
+        },
+        "businesses": [
+          {
+            "phone": "1234567890",
+            "plan": "free",
+            "businessAddress": "",
+            "businessName": "Habibur Business",
+            "businessUrl": "",
+            "createdAt": "2026-01-14T04:42:22.454Z",
+            "businessId": "0d501855-1cb8-4294-b1b8-2f273a27d3a4",
+            "socialLinks": {
+              "youtube": "",
+              "whatsapp": "",
+              "facebook": ""
+            }
+          }
+        ],
+        "profile": {
+          "email": "habibur@example.com",
+          "userId": "YtkBnyqYmIPhhliZdX1BJ5EfShG2",
+          "createdAt": "2026-01-14T04:42:22.454Z",
+          "updatedAt": "2026-01-14T04:42:22.454Z",
+          "phone": "1234567890",
+          "userName": ""
+        }
+      },
+      {
+        "id": "test@example.com",
+        "profile": {
+          "userId": "75UqxxugJYeeSnjmlQ8iDG05Hjr2",
+          "email": "test@example.com",
+          "updatedAt": "2026-01-13T05:34:14.812Z",
+          "phone": "0123456789",
+          "createdAt": "2026-01-13T05:34:14.812Z",
+          "userName": ""
+        },
+        "businesses": [
+          {
+            "businessName": "Test Business",
+            "businessAddress": "",
+            "phone": "0123456789",
+            "businessId": "fd93d13c-8960-47c8-bf69-05581b07eadf",
+            "businessUrl": "",
+            "plan": "free",
+            "createdAt": "2026-01-13T05:34:14.812Z",
+            "socialLinks": {
+              "whatsapp": "",
+              "youtube": "",
+              "facebook": ""
+            }
+          }
+        ]
+      }
+    ],
+    "Plan": [
+      {
+        "id": "Elite",
+        "name": "Elite",
+        "capabilities": {
+          "maxProductNumber": 999999,
+          "canAddOrder": false,
+          "canAddProducts": true,
+          "maxCustomerNumber": 1000000,
+          "hasExportImportOption": false,
+          "canAddCustomer": true,
+          "maxOrderNumber": 999999
+        },
+        "price": 4990
+      },
+      {
+        "id": "Gold",
+        "price": 2490,
+        "name": "Gold",
+        "capabilities": {
+          "maxOrderNumber": 500,
+          "canAddCustomer": true,
+          "canAddProducts": true,
+          "maxProductNumber": 200,
+          "hasExportImportOption": true,
+          "maxCustomerNumber": 200,
+          "canAddOrder": true
+        }
+      },
+      {
+        "id": "Lite",
+        "price": 0,
+        "name": "Lite",
+        "capabilities": {
+          "maxCustomerNumber": 10,
+          "maxOrderNumber": 1000,
+          "maxProductNumber": 10,
+          "canAddOrder": true,
+          "canAddProducts": true,
+          "hasExportImportOption": false,
+          "canAddCustomer": true
+        }
+      },
+      {
+        "id": "Silver",
+        "capabilities": {
+          "canAddProducts": true,
+          "maxCustomerNumber": 50,
+          "canAddOrder": true,
+          "hasExportImportOption": false,
+          "maxOrderNumber": 100,
+          "canAddCustomer": true,
+          "maxProductNumber": 50
+        },
+        "price": 992,
+        "name": "Silver"
+      }
+    ],
+    "activity_logs": [
+      {
+        "id": "mXG7AiuVWsnRF351OtgW",
+        "adminEmail": "admin001@gmail.com",
+        "targetUserEmail": "business_03@gmail.com",
+        "details": {
+          "preset": "Lite"
+        },
+        "action": "apply_preset",
+        "timestamp": "2026-01-14T14:20:58.988Z",
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+        "adminId": "jYnIJlP1e2UWD81CdDU2ifKm08G3"
+      },
+      {
+        "id": "7rjOdUwbo6J1z8KuGifi",
+        "targetUserEmail": "business_03@gmail.com",
+        "timestamp": "2026-01-14T05:47:02.730Z",
+        "action": "apply_preset",
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "details": {
+          "preset": "Elite"
+        },
+        "adminEmail": "admin@test.com",
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2"
+      },
+      {
+        "id": "gUij7N4iAchKbax8VQhN",
+        "action": "apply_preset",
+        "details": {
+          "preset": "Gold"
+        },
+        "targetUserEmail": "business_03@gmail.com",
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+        "adminEmail": "admin@test.com",
+        "timestamp": "2026-01-14T05:47:00.422Z"
+      },
+      {
+        "id": "WiHSdkspnujD59oMV8oc",
+        "action": "apply_preset",
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+        "adminEmail": "admin@test.com",
+        "targetUserEmail": "business_03@gmail.com",
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "timestamp": "2026-01-14T05:46:58.238Z",
+        "details": {
+          "preset": "Silver"
+        }
+      },
+      {
+        "id": "67VWRyonwPvAb9CWyvY4",
+        "details": {
+          "preset": "Lite"
+        },
+        "adminEmail": "admin@test.com",
+        "targetUserEmail": "business_03@gmail.com",
+        "timestamp": "2026-01-14T05:46:53.028Z",
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+        "action": "apply_preset"
+      },
+      {
+        "id": "gwfhZrKU96hv0h51DnVt",
+        "targetUserEmail": "business_03@gmail.com",
+        "adminEmail": "admin@test.com",
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "timestamp": "2026-01-14T05:46:47.738Z",
+        "details": {
+          "preset": "Silver"
+        },
+        "action": "apply_preset"
+      },
+      {
+        "id": "eWj2HATspf4rsnExB9hU",
+        "action": "apply_preset",
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+        "targetUserEmail": "business_03@gmail.com",
+        "details": {
+          "preset": "Lite"
+        },
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "timestamp": "2026-01-14T05:46:44.933Z",
+        "adminEmail": "admin@test.com"
+      },
+      {
+        "id": "QZUlvPbd1emvDb08B0Gn",
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "details": {
+          "preset": "Elite"
+        },
+        "adminEmail": "admin@test.com",
+        "targetUserEmail": "business_03@gmail.com",
+        "action": "apply_preset",
+        "timestamp": "2026-01-14T05:46:37.630Z",
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2"
+      },
+      {
+        "id": "QOCWk8b7ieSCBRczC8f0",
+        "details": {
+          "preset": "Gold"
+        },
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+        "targetUserEmail": "business_03@gmail.com",
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "adminEmail": "admin@test.com",
+        "timestamp": "2026-01-14T05:46:27.201Z",
+        "action": "apply_preset"
+      },
+      {
+        "id": "AJZEgGGRYSHxcWkX2IJi",
+        "details": {
+          "canAddOrder": false
+        },
+        "targetUserEmail": "business_03@gmail.com",
+        "timestamp": "2026-01-14T05:42:22.492Z",
+        "adminEmail": "admin@test.com",
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "action": "update_capability"
+      },
+      {
+        "id": "6hD9lQnQEdJiYS5V1lbH",
+        "targetUserEmail": "business_03@gmail.com",
+        "adminEmail": "admin@test.com",
+        "details": {
+          "canAddOrder": true
+        },
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "action": "update_capability",
+        "timestamp": "2026-01-14T05:42:06.003Z",
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2"
+      },
+      {
+        "id": "EbZesnc717oXaTSDa6Ou",
+        "action": "update_capability",
+        "adminEmail": "admin@test.com",
+        "targetUserId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+        "details": {
+          "canAddOrder": true
+        },
+        "timestamp": "2026-01-14T05:42:05.651Z",
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "targetUserEmail": "business_03@gmail.com"
+      },
+      {
+        "id": "dKknxa6RK7MzTnbklt23",
+        "targetUserId": "YtkBnyqYmIPhhliZdX1BJ5EfShG2",
+        "adminEmail": "admin@test.com",
+        "action": "apply_preset",
+        "adminId": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "details": {
+          "preset": "Gold"
+        },
+        "timestamp": "2026-01-14T05:18:50.781Z",
+        "targetUserEmail": "habibur@example.com"
+      }
+    ],
+    "products": [
+      {
+        "id": "ocTiG3V7VDrTt4RdDM2m",
+        "price": 200,
+        "createdAt": "2026-01-13T04:59:00.104Z",
+        "name": "p 01",
+        "businessId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+        "details": "p details",
+        "updatedAt": "2026-01-13T04:59:00.104Z"
+      }
+    ],
+    "users": [
+      {
+        "id": "75UqxxugJYeeSnjmlQ8iDG05Hjr2",
+        "createdAt": "2026-01-13T05:33:29.052Z",
+        "email": "test@example.com",
+        "userName": "",
+        "phone": "0123456789",
+        "role": "business",
+        "status": "enabled"
+      },
+      {
+        "id": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+        "phone": "123456",
+        "createdAt": "2026-01-12T02:48:17.129Z",
+        "email": "business_01@gmail.com",
+        "role": "business",
+        "status": "enabled",
+        "userName": ""
+      },
+      {
+        "id": "MLIfATXhNQTnLOdHn1F4NdKk9fB3",
+        "role": "admin",
+        "createdAt": "2026-01-14T04:37:11.942Z",
+        "businessName": "Admin",
+        "status": "enabled",
+        "email": "admin@test.com",
+        "canCreateOrders": true,
+        "plan": "paid"
+      },
+      {
+        "id": "YtkBnyqYmIPhhliZdX1BJ5EfShG2",
+        "phone": "1234567890",
+        "userName": "",
+        "email": "habibur@example.com",
+        "role": "business",
+        "createdAt": "2026-01-14T04:41:19.941Z",
+        "status": "enabled"
+      },
+      {
+        "id": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+        "role": "business",
+        "userName": "",
+        "createdAt": "2026-01-14T04:22:49.949Z",
+        "email": "business_03@gmail.com",
+        "status": "enabled",
+        "phone": "123456789"
+      },
+      {
+        "id": "jYnIJlP1e2UWD81CdDU2ifKm08G3",
+        "businessName": "Admin 001",
+        "email": "admin001@gmail.com",
+        "status": "enabled",
+        "role": "admin",
+        "plan": "paid",
+        "createdAt": "2026-01-14T04:23:57.878Z",
+        "canCreateOrders": true
+      }
+    ],
+    "businessData": [
+      {
+        "businessEmail": "business_01@gmail.com",
+        "businessName": "Business_02",
+        "rootPath": "BusinessAccounts/business_01@gmail.com",
+        "customers": [
+          {
+            "id": "3e35958b-5079-4c57-bf39-509b8071caf2",
+            "createdAt": "2026-01-12T00:00:00.000Z",
+            "name": "customer 02",
+            "rating": 0,
+            "email": "",
+            "updatedAt": "2026-01-13T00:00:00.000Z",
+            "phone": "09913165241",
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "address": "munshiganj",
+            "comment": ""
+          },
+          {
+            "id": "5f98ab71-99d9-4756-990c-36550e53c75c",
+            "name": "habib",
+            "rating": 0,
+            "email": "",
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "createdAt": "2026-01-13T05:26:40.255Z",
+            "address": "kjla",
+            "updatedAt": "2026-01-13T05:26:40.255Z",
+            "comment": "",
+            "phone": "01913165248"
+          },
+          {
+            "id": "6172e30d-8ad0-4f56-b3a3-d8b7da9bff42",
+            "rating": 0,
+            "address": "Borishal",
+            "comment": "",
+            "updatedAt": "2026-01-12T16:42:31.371Z",
+            "name": "customer 03",
+            "email": "",
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "phone": "1913165243",
+            "createdAt": "2026-01-12T16:42:31.371Z"
+          },
+          {
+            "id": "b8b65ad8-09ec-4d65-9480-1e0fc14a22f1",
+            "name": "customer 02",
+            "updatedAt": "2026-01-12T16:42:30.418Z",
+            "phone": "1913165240",
+            "email": "",
+            "rating": 0,
+            "comment": "",
+            "createdAt": "2026-01-12T16:42:30.418Z",
+            "address": "Dhaka",
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2"
+          }
+        ],
+        "orders": [
+          {
+            "id": "60iAKCNkZKf0sonEYeRn",
+            "customerId": "5f98ab71-99d9-4756-990c-36550e53c75c",
+            "source": "messenger",
+            "hasDeliveryTime": false,
+            "deliveryDate": "2026-01-14T18:00:00.000Z",
+            "deliveryCharge": 1000,
+            "status": "completed",
+            "products": [
+              {
+                "name": "MacbookPro 2021",
+                "price": 1000,
+                "description": "MacBook base variant",
+                "id": "PuaGfjTI53rv2WVeQy6C",
+                "quantity": 5,
+                "code": "mbp21"
+              },
+              {
+                "description": "Mac mini Base variant ",
+                "price": 600,
+                "id": "546pllxxx",
+                "name": "Mac mini",
+                "quantity": 2
+              },
+              {
+                "quantity": 1,
+                "description": "green iPad ",
+                "name": "iPad",
+                "price": 800,
+                "id": "8Ahwfr66Ko0dH47EJ79Q",
+                "code": "ipad20"
+              }
+            ],
+            "businessId": "61c5b4a1-b540-4ebb-ba37-dad77683039b",
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "createdAt": "2026-01-13T12:32:05.106Z",
+            "updatedAt": "2026-01-13T13:44:35.179Z",
+            "notes": "Urgent ",
+            "hasOrderTime": false,
+            "address": "kjla",
+            "orderDate": "2026-01-13T12:30:00.761Z",
+            "totalAmount": 8000
+          },
+          {
+            "id": "G4RRlEVdoGiVHFzJ6h0j",
+            "status": "pending",
+            "hasOrderTime": false,
+            "createdAt": "2026-01-12T03:44:47.332Z",
+            "price": 100,
+            "productDetails": "no details",
+            "orderDate": "2026-01-12T03:43:52.632Z",
+            "customerId": "bd2f3d71-eebf-4a7b-95f4-aeac8bc38514",
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "hasDeliveryTime": false,
+            "businessId": "61c5b4a1-b540-4ebb-ba37-dad77683039b",
+            "notes": "",
+            "address": "Kajla",
+            "productId": null,
+            "source": "whatsapp",
+            "deliveryDate": "2026-01-12T18:00:00.000Z",
+            "updatedAt": "2026-01-12T03:44:47.332Z"
+          },
+          {
+            "id": "Z9HES1v6T8n0GN6qVSNT",
+            "price": 500,
+            "orderDate": "2026-01-12T05:03:22.037Z",
+            "businessId": "61c5b4a1-b540-4ebb-ba37-dad77683039b",
+            "hasOrderTime": false,
+            "productId": "DKF7VLn1lMEMTiuaCOqD",
+            "createdAt": "2026-01-12T05:04:51.613Z",
+            "updatedAt": "2026-01-12T05:04:51.613Z",
+            "customerId": "cdbb5993-9557-48cd-bd00-6d68dedd7aa7",
+            "hasDeliveryTime": false,
+            "address": "munshiganj",
+            "status": "pending",
+            "source": "whatsapp",
+            "productDetails": "Mac mini m4",
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "deliveryDate": "2026-01-12T18:00:00.000Z",
+            "notes": "",
+            "productName": "Mac mini m4"
+          }
+        ],
+        "products": [
+          {
+            "id": "8Ahwfr66Ko0dH47EJ79Q",
+            "productId": "8Ahwfr66Ko0dH47EJ79Q",
+            "details": "base variant",
+            "createdAt": "2026-01-12T16:43:05.524Z",
+            "productName": "iPad",
+            "updatedAt": "2026-01-12T16:43:05.524Z",
+            "businessId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "name": "iPad",
+            "code": "ipad20",
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "price": 800
+          },
+          {
+            "id": "PuaGfjTI53rv2WVeQy6C",
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "businessId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "name": "MacbookPro 2021",
+            "details": "base variant",
+            "updatedAt": "2026-01-12T16:43:02.043Z",
+            "code": "mbp21",
+            "createdAt": "2026-11-30T18:00:00.000Z",
+            "productName": "MacbookPro 2021",
+            "price": 1000,
+            "productId": "PuaGfjTI53rv2WVeQy6C"
+          },
+          {
+            "id": "wum8bO54cvWXTKEdVsCh",
+            "productId": "wum8bO54cvWXTKEdVsCh",
+            "businessId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "updatedAt": "2026-01-12T16:43:03.785Z",
+            "code": "ip16",
+            "price": 500,
+            "createdAt": "2026-01-12T16:43:03.785Z",
+            "productName": "iPhone 16",
+            "name": "iPhone 16",
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "details": "base variant"
+          }
+        ],
+        "experiences": [
+          {
+            "id": "9x36P0BLe715hxYnt0PK",
+            "comment": "good exp",
+            "createdAt": "2026-01-12T06:13:05.704Z",
+            "rating": 5,
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "updatedAt": "2026-01-12T06:13:05.704Z",
+            "orderId": "T9wWKh3ia1mJtTP3r88s",
+            "customerId": "bd2f3d71-eebf-4a7b-95f4-aeac8bc38514"
+          },
+          {
+            "id": "zHNESi8MVZAtV8OHdHuW",
+            "rating": 5,
+            "ownerId": "9K0VQg3NRMaXunUyy0LP4Oual7X2",
+            "customerId": "5f98ab71-99d9-4756-990c-36550e53c75c",
+            "updatedAt": "2026-01-13T13:44:34.723Z",
+            "createdAt": "2026-01-13T13:44:34.723Z",
+            "comment": "",
+            "orderId": "60iAKCNkZKf0sonEYeRn"
+          }
+        ]
+      },
+      {
+        "businessEmail": "business_03@gmail.com",
+        "businessName": "Business 03 ",
+        "rootPath": "BusinessAccounts/business_03@gmail.com",
+        "customers": [
+          {
+            "id": "8cc5b985-c25d-40a6-9cfc-27b412e4f1cf",
+            "ownerId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+            "createdAt": "2026-01-14T14:08:22.404Z",
+            "updatedAt": "2026-01-14T14:08:22.404Z",
+            "phone": "01913165240",
+            "email": "",
+            "address": "Kajla",
+            "comment": "",
+            "name": "Habibur rahman",
+            "rating": 0
+          }
+        ],
+        "orders": [
+          {
+            "id": "9E6YiZvsvWbG0WQdWVjY",
+            "totalAmount": 204000,
+            "status": "pending",
+            "hasOrderTime": false,
+            "businessId": "22b38dbd-4339-4fee-9d78-14c040b87293",
+            "ownerId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+            "orderDate": "2026-01-14T14:06:30.099Z",
+            "customerId": "8cc5b985-c25d-40a6-9cfc-27b412e4f1cf",
+            "hasDeliveryTime": false,
+            "notes": "",
+            "source": "messenger",
+            "deliveryCharge": 2000,
+            "products": [
+              {
+                "quantity": 2,
+                "description": "base variant",
+                "price": 100000,
+                "name": "Macbook M4",
+                "id": "uAnhS93aYpAojSOnrQok",
+                "code": "mb4"
+              },
+              {
+                "price": 500,
+                "name": "shirt",
+                "quantity": 4,
+                "id": "bweyzvf6s"
+              }
+            ],
+            "address": "Kajla",
+            "deliveryDate": "2026-01-15T18:00:00.000Z",
+            "createdAt": "2026-01-14T14:08:22.809Z",
+            "updatedAt": "2026-01-14T14:08:22.809Z"
+          },
+          {
+            "id": "Rfej8jWjBh0tV4rvHyzK",
+            "products": [
+              {
+                "quantity": 1,
+                "code": "mb4",
+                "id": "uAnhS93aYpAojSOnrQok",
+                "name": "Macbook M4",
+                "price": 100000
+              }
+            ],
+            "deliveryCharge": 0,
+            "createdAt": "2026-01-14T14:09:45.805Z",
+            "customerId": "8cc5b985-c25d-40a6-9cfc-27b412e4f1cf",
+            "hasDeliveryTime": false,
+            "totalAmount": 100000,
+            "deliveryDate": "2026-01-14T18:00:00.000Z",
+            "source": "whatsapp",
+            "ownerId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+            "updatedAt": "2026-01-14T14:10:36.208Z",
+            "status": "completed",
+            "hasOrderTime": false,
+            "notes": "",
+            "orderDate": "2026-01-14T14:09:12.575Z",
+            "address": "Kajla",
+            "businessId": "22b38dbd-4339-4fee-9d78-14c040b87293"
+          }
+        ],
+        "products": [
+          {
+            "id": "14YXSDGkQ94yxnU2G7tu",
+            "code": "imac",
+            "updatedAt": "2026-01-14T14:16:40.505Z",
+            "businessId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+            "details": "",
+            "price": 200000,
+            "name": "iMac ",
+            "productName": "iMac ",
+            "ownerId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+            "productId": "14YXSDGkQ94yxnU2G7tu",
+            "createdAt": "2026-01-14T14:16:40.505Z"
+          },
+          {
+            "id": "RUkqShsN9SzRS0RLAEBh",
+            "businessId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+            "productId": "RUkqShsN9SzRS0RLAEBh",
+            "details": "",
+            "code": "iphone16",
+            "ownerId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+            "updatedAt": "2026-01-14T14:16:38.519Z",
+            "productName": "iPhone 16 Pro",
+            "price": 50000,
+            "name": "iPhone 16 Pro",
+            "createdAt": "2026-01-14T14:05:49.597Z"
+          },
+          {
+            "id": "uAnhS93aYpAojSOnrQok",
+            "code": "mb4",
+            "createdAt": "2026-01-14T14:06:28.798Z",
+            "updatedAt": "2026-01-14T14:16:36.869Z",
+            "productId": "uAnhS93aYpAojSOnrQok",
+            "name": "Macbook M4",
+            "price": 100000,
+            "businessId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+            "ownerId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2",
+            "productName": "Macbook M4",
+            "details": ""
+          }
+        ],
+        "experiences": [
+          {
+            "id": "jcmyQIp4W4x9B99gryRz",
+            "createdAt": "2026-01-14T14:10:36.665Z",
+            "customerId": "8cc5b985-c25d-40a6-9cfc-27b412e4f1cf",
+            "updatedAt": "2026-01-14T14:10:36.665Z",
+            "rating": 4,
+            "comment": "besi kotha bole ",
+            "orderId": "Rfej8jWjBh0tV4rvHyzK",
+            "ownerId": "eRrkPgHSOEetnbxRVv2ULb0ZJbV2"
+          }
+        ]
+      },
+      {
+        "businessEmail": "habibur@example.com",
+        "businessName": "Habibur Business",
+        "rootPath": "BusinessAccounts/habibur@example.com",
+        "customers": [],
+        "orders": [],
+        "products": [],
+        "experiences": []
+      },
+      {
+        "businessEmail": "test@example.com",
+        "businessName": "Test Business",
+        "rootPath": "BusinessAccounts/test@example.com",
+        "customers": [
+          {
+            "id": "2a806101-f7d4-484f-a4c5-2b3e755ca4cb",
+            "createdAt": "2026-01-13T05:41:03.219Z",
+            "comment": "",
+            "name": "Jane Smith",
+            "ownerId": "75UqxxugJYeeSnjmlQ8iDG05Hjr2",
+            "updatedAt": "2026-01-13T05:41:03.219Z",
+            "rating": 0,
+            "phone": "01812345678",
+            "email": "",
+            "address": ""
+          },
+          {
+            "id": "3028b7c5-87a5-4803-a300-ae4e6f9691e6",
+            "rating": 0,
+            "phone": "01712345678",
+            "createdAt": "2026-01-13T05:36:46.322Z",
+            "email": "",
+            "ownerId": "75UqxxugJYeeSnjmlQ8iDG05Hjr2",
+            "updatedAt": "2026-01-13T05:36:46.322Z",
+            "address": "",
+            "comment": "",
+            "name": "John Doe"
+          }
+        ],
+        "orders": [
+          {
+            "id": "RgzPnZISplvEYuIrW5jk",
+            "orderDate": "2026-01-13T05:49:52.981Z",
+            "deliveryDate": "2026-01-13T18:00:00.000Z",
+            "updatedAt": "2026-01-13T06:12:53.093Z",
+            "address": "",
+            "hasOrderTime": false,
+            "customerId": "2a806101-f7d4-484f-a4c5-2b3e755ca4cb",
+            "totalAmount": 1600,
+            "deliveryCharge": 1000,
+            "products": [
+              {
+                "quantity": 2,
+                "price": 300,
+                "id": "vxrtx0hbj",
+                "name": "pr 03"
+              }
+            ],
+            "notes": "",
+            "status": "pending",
+            "source": "whatsapp",
+            "businessId": "fd93d13c-8960-47c8-bf69-05581b07eadf",
+            "ownerId": "75UqxxugJYeeSnjmlQ8iDG05Hjr2",
+            "createdAt": "2026-01-13T06:01:21.484Z",
+            "hasDeliveryTime": false
+          },
+          {
+            "id": "w0y0xkE17fwbrI0OHwuO",
+            "address": "",
+            "createdAt": "2026-01-13T06:00:46.512Z",
+            "updatedAt": "2026-01-13T06:00:46.512Z",
+            "customerId": "2a806101-f7d4-484f-a4c5-2b3e755ca4cb",
+            "products": [
+              {
+                "id": "1",
+                "price": 100,
+                "name": "test",
+                "quantity": 2
+              }
+            ],
+            "deliveryDate": "2026-01-13T18:00:00.000Z",
+            "hasOrderTime": false,
+            "businessId": "fd93d13c-8960-47c8-bf69-05581b07eadf",
+            "totalAmount": 400,
+            "notes": "",
+            "ownerId": "75UqxxugJYeeSnjmlQ8iDG05Hjr2",
+            "orderDate": "2026-01-13T05:49:52.981Z",
+            "deliveryCharge": 200,
+            "hasDeliveryTime": false,
+            "status": "pending",
+            "source": "whatsapp"
+          }
+        ],
+        "products": [],
+        "experiences": []
+      }
+    ]
+  }
+}
