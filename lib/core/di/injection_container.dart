@@ -11,6 +11,7 @@ import '../../features/orders/presentation/cubit/create_order_cubit.dart';
 import '../../features/orders/domain/repositories/order_repository.dart';
 import '../../features/orders/data/repositories/order_repository_impl.dart';
 import '../../features/orders/data/datasources/order_remote_data_source.dart';
+import '../../features/home/presentation/cubit/dashboard_cubit.dart';
 
 import '../../features/customers/domain/repositories/customer_repository.dart';
 import '../../features/customers/data/repositories/customer_repository_impl.dart';
@@ -37,6 +38,13 @@ Future<void> init() async {
   sl.registerFactory(() => AuthCubit(sl()));
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(sl()));
+  
+  // Home Feature (Dashboard)
+  sl.registerFactory(() => DashboardCubit(
+    orderRepository: sl(),
+    customerRepository: sl(),
+    productRepository: sl(),
+  ));
   
   // Customer Feature
   sl.registerLazySingleton<CustomerRepository>(() => CustomerRepositoryImpl(sl()));
