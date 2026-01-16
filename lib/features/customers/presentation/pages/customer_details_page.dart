@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:orderly/features/customers/presentation/cubit/customers_cubit.dart';
 import 'package:orderly/features/customers/domain/entities/customer.dart';
 import 'package:orderly/core/theme/app_colors.dart';
 import 'package:orderly/core/navigation/app_routes.dart';
@@ -30,7 +32,6 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
         title: const Text('Customer Details'),
         backgroundColor: Colors.white,
         foregroundColor: AppColors.textPrimary,
-        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
@@ -46,6 +47,10 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                 });
               }
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.red),
+            onPressed: () => _confirmDelete(context),
           ),
           const SizedBox(width: 8),
         ],
@@ -247,6 +252,34 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
           ),
         ),
       ],
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Customer'),
+        content: Text('Are you sure you want to delete "${customer.name}"? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              context.read<CustomersCubit>().deleteCustomer(customer.id);
+              Navigator.pop(context); // Go back to list
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Customer deleted successfully')),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 }

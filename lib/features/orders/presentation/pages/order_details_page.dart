@@ -49,6 +49,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               }
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.red),
+            onPressed: () => _confirmDelete(context),
+          ),
           const SizedBox(width: 8),
         ],
       ),
@@ -345,6 +349,35 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Order status updated to $newStatus')),
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Order'),
+        content: const Text('Are you sure you want to delete this order? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final email = FirebaseAuth.instance.currentUser?.email ?? '';
+              Navigator.pop(context); // Close dialog
+              context.read<OrderCubit>().deleteOrder(order.id, email);
+              Navigator.pop(context); // Go back to list
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Order deleted successfully')),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 }

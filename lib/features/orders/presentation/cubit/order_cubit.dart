@@ -40,4 +40,12 @@ class OrderCubit extends Cubit<OrderState> {
       (_) => fetchOrders(businessId), // Refresh
     );
   }
+
+  Future<void> deleteOrder(String orderId, String businessId) async {
+    final result = await _orderRepository.deleteOrder(businessId, orderId);
+    result.fold(
+      (failure) => emit(OrderError(failure.message)),
+      (_) => fetchOrders(businessId), // Refresh
+    );
+  }
 }

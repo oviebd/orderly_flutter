@@ -142,10 +142,46 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final product = state.products[index];
-          return InkWell(
-            onTap: () => _navigateToProductDetails(context, product),
-            borderRadius: BorderRadius.circular(16),
-            child: _buildProductCard(product),
+          return Dismissible(
+            key: Key(product.id),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(Icons.delete, color: Colors.white),
+            ),
+            confirmDismiss: (direction) async {
+              return await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Delete Product'),
+                  content: Text('Are you sure you want to delete "${product.name}"?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              );
+            },
+            onDismissed: (direction) {
+              context.read<ProductsCubit>().deleteProduct(product.id);
+            },
+            child: InkWell(
+              onTap: () => _navigateToProductDetails(context, product),
+              borderRadius: BorderRadius.circular(16),
+              child: _buildProductCard(product),
+            ),
           );
         },
       ),

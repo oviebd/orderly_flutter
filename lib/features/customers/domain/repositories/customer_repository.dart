@@ -29,5 +29,7 @@ abstract class CustomerRepository {
     String businessId,
     Customer customer,
   );
-}
 
+  /// Delete a customer by ID
+  Future<Either<Failure, void>> deleteCustomer(String businessId, String customerId);
+}

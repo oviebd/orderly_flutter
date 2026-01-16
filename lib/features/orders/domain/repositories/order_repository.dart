@@ -7,4 +7,5 @@ abstract class OrderRepository {
   Future<Either<Failure, void>> createOrder(String businessId, Order order);
   Future<Either<Failure, void>> updateOrder(String businessId, Order order);
   Future<Either<Failure, void>> updateOrderStatus(String businessId, String orderId, String status);
+  Future<Either<Failure, void>> deleteOrder(String businessId, String orderId);
 }

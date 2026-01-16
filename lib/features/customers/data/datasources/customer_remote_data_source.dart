@@ -7,6 +7,7 @@ abstract class CustomerRemoteDataSource {
   Future<CustomerModel?> getCustomerById(String businessId, String customerId);
   Future<CustomerModel> createCustomer(String businessId, CustomerModel customer);
   Future<void> updateCustomer(String businessId, CustomerModel customer);
+  Future<void> deleteCustomer(String businessId, String customerId);
 }
 
 class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
@@ -125,5 +126,14 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
         .collection('customers')
         .doc(customer.id)
         .update(customer.toJson());
+  }
+  @override
+  Future<void> deleteCustomer(String businessId, String customerId) async {
+    await _firestore
+        .collection('BusinessAccounts')
+        .doc(businessId)
+        .collection('customers')
+        .doc(customerId)
+        .delete();
   }
 }

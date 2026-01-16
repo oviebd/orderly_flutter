@@ -7,6 +7,7 @@ abstract class ProductRemoteDataSource {
   Future<ProductModel?> getProductById(String businessId, String productId);
   Future<ProductModel> createProduct(String businessId, ProductModel product);
   Future<void> updateProduct(String businessId, ProductModel product);
+  Future<void> deleteProduct(String businessId, String productId);
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -125,5 +126,14 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         .collection('products')
         .doc(product.id)
         .update(product.toJson());
+  }
+  @override
+  Future<void> deleteProduct(String businessId, String productId) async {
+    await _firestore
+        .collection('BusinessAccounts')
+        .doc(businessId)
+        .collection('products')
+        .doc(productId)
+        .delete();
   }
 }

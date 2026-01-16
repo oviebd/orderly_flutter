@@ -65,4 +65,12 @@ class ProductsCubit extends Cubit<ProductsState> {
     final updated = [product, ...state.products];
     emit(state.copyWith(products: updated));
   }
+
+  Future<void> deleteProduct(String productId) async {
+    final result = await _productRepository.deleteProduct(_businessId, productId);
+    result.fold(
+      (failure) => emit(state.copyWith(error: failure.message)),
+      (_) => loadProducts(),
+    );
+  }
 }

@@ -25,9 +25,6 @@ abstract class ProductRepository {
   );
 
   /// Update an existing product
-  Future<Either<Failure, void>> updateProduct(
-    String businessId,
-    Product product,
-  );
+  Future<Either<Failure, void>> updateProduct(String businessId, Product product);
+  Future<Either<Failure, void>> deleteProduct(String businessId, String productId);
 }
-

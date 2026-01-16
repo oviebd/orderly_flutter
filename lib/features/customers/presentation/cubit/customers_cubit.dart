@@ -65,4 +65,12 @@ class CustomersCubit extends Cubit<CustomersState> {
     final updated = [customer, ...state.customers];
     emit(state.copyWith(customers: updated));
   }
+
+  Future<void> deleteCustomer(String customerId) async {
+    final result = await _customerRepository.deleteCustomer(_businessId, customerId);
+    result.fold(
+      (failure) => emit(state.copyWith(error: failure.message)),
+      (_) => loadCustomers(),
+    );
+  }
 }

@@ -140,27 +140,64 @@ class _OrdersTabState extends State<OrdersTab> {
                       itemCount: filteredOrders.length,
                       itemBuilder: (context, index) {
                         final order = filteredOrders[index];
-                        return InkWell(
-                          onTap: () {
-                            final orderCubit = context.read<OrderCubit>();
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.orderDetails,
-                              arguments: {
-                                'order': order,
-                                'orderCubit': orderCubit,
-                              },
-                            ).then((_) {
-                              if (context.mounted) {
-                                orderCubit.fetchOrders(email);
-                              }
-                            });
+                        return Dismissible(
+                          key: Key(order.id),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 20),
+                            margin: const EdgeInsets.only(bottom: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Icon(Icons.delete, color: Colors.white),
+                          ),
+                          confirmDismiss: (direction) async {
+                            return await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Delete Order'),
+                                content: const Text('Are you sure you want to delete this order?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                    child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                                  ),
+                                ],
+                              ),
+                            );
                           },
-                          child: OrderCard(
-                            order: order,
-                            onStatusChanged: (newStatus) {
-                              context.read<OrderCubit>().updateStatus(order.id, newStatus, email);
+                          onDismissed: (direction) {
+                            context.read<OrderCubit>().deleteOrder(order.id, email);
+                          },
+                          child: InkWell(
+                            onTap: () {
+                              final orderCubit = context.read<OrderCubit>();
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.orderDetails,
+                                arguments: {
+                                  'order': order,
+                                  'orderCubit': orderCubit,
+                                },
+                              ).then((_) {
+                                if (context.mounted) {
+                                  orderCubit.fetchOrders(email);
+                                }
+                              });
                             },
+                            child: OrderCard(
+                              order: order,
+                              onStatusChanged: (newStatus) {
+                                context.read<OrderCubit>().updateStatus(order.id, newStatus, email);
+                              },
+                            ),
                           ),
                         );
                       },

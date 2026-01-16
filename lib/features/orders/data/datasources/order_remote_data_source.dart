@@ -7,6 +7,7 @@ abstract class OrderRemoteDataSource {
   Future<void> createOrder(String businessId, OrderModel order);
   Future<void> updateOrder(String businessId, OrderModel order);
   Future<void> updateOrderStatus(String businessId, String orderId, String status);
+  Future<void> deleteOrder(String businessId, String orderId);
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -73,5 +74,14 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
         .collection('orders')
         .doc(orderId)
         .update({'status': status});
+  }
+  @override
+  Future<void> deleteOrder(String businessId, String orderId) async {
+    await _firestore
+        .collection('BusinessAccounts')
+        .doc(businessId)
+        .collection('orders')
+        .doc(orderId)
+        .delete();
   }
 }

@@ -81,4 +81,16 @@ class ProductRepositoryImpl implements ProductRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+  @override
+  Future<Either<Failure, void>> deleteProduct(
+    String businessId,
+    String productId,
+  ) async {
+    try {
+      await _remoteDataSource.deleteProduct(businessId, productId);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }
