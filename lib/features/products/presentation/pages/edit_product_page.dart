@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../core/di/injection_container.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/product.dart';
-import '../cubit/create_product_cubit.dart';
+import 'package:orderly/core/di/injection_container.dart';
+import 'package:orderly/core/theme/app_colors.dart';
+import 'package:orderly/features/products/domain/entities/product.dart';
+import 'package:orderly/features/products/presentation/cubit/create_product_cubit.dart';
 
 class EditProductPage extends StatelessWidget {
   final Product product;

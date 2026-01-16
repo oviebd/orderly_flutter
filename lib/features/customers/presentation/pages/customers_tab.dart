@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/di/injection_container.dart';
-import '../../domain/entities/customer.dart';
-import '../cubit/customers_cubit.dart';
-import 'create_customer_page.dart';
-import 'customer_details_page.dart';
+import 'package:orderly/core/di/injection_container.dart';
+import 'package:orderly/features/customers/domain/entities/customer.dart';
+import 'package:orderly/core/theme/app_colors.dart';
+import 'package:orderly/core/navigation/app_routes.dart';
+import 'package:orderly/features/customers/presentation/cubit/customers_cubit.dart';
 
 class CustomersTab extends StatelessWidget {
   const CustomersTab({super.key});
@@ -158,7 +158,7 @@ class _CustomersTabViewState extends State<_CustomersTabView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+            color: const Color(0xFF0F172A).withOpacity(0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -174,7 +174,7 @@ class _CustomersTabViewState extends State<_CustomersTabView> {
               gradient: LinearGradient(
                 colors: [
                   const Color(0xFF8B5CF6),
-                  const Color(0xFF8B5CF6).withValues(alpha: 0.7),
+                  const Color(0xFF8B5CF6).withOpacity(0.7),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -269,7 +269,7 @@ class _CustomersTabViewState extends State<_CustomersTabView> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
+              color: const Color(0xFF8B5CF6).withOpacity(0.1),
               borderRadius: BorderRadius.circular(24),
             ),
             child: const Icon(
@@ -374,22 +374,19 @@ class _CustomersTabViewState extends State<_CustomersTabView> {
   }
 
   Future<void> _navigateToCreateCustomer(BuildContext context) async {
-    final result = await Navigator.push<Customer>(
-      context,
-      MaterialPageRoute(builder: (_) => const CreateCustomerPage()),
-    );
-
-    if (result != null && context.mounted) {
-      context.read<CustomersCubit>().addCustomerToList(result);
+    final result = await Navigator.pushNamed(context, AppRoutes.createCustomer);
+    if (result == true && context.mounted) {
+      context.read<CustomersCubit>().loadCustomers();
     }
   }
 
   Future<void> _navigateToCustomerDetails(BuildContext context, Customer customer) async {
-    await Navigator.push(
+    await Navigator.pushNamed(
       context,
-      MaterialPageRoute(builder: (_) => CustomerDetailsPage(customer: customer)),
+      AppRoutes.customerDetails,
+      arguments: customer,
     );
-    // Refresh list if needed when coming back
+
     if (context.mounted) {
       context.read<CustomersCubit>().loadCustomers();
     }

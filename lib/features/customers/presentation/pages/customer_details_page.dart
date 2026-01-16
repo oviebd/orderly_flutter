@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../domain/entities/customer.dart';
-import '../../../../core/theme/app_colors.dart';
-import 'edit_customer_page.dart';
+import 'package:orderly/features/customers/domain/entities/customer.dart';
+import 'package:orderly/core/theme/app_colors.dart';
+import 'package:orderly/core/navigation/app_routes.dart';
 
 class CustomerDetailsPage extends StatefulWidget {
   final Customer customer;
@@ -35,11 +35,10 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             onPressed: () async {
-              final updated = await Navigator.push<Customer>(
+              final updated = await Navigator.pushNamed<Customer>(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => EditCustomerPage(customer: customer),
-                ),
+                AppRoutes.editCustomer,
+                arguments: customer,
               );
               if (updated != null && mounted) {
                 setState(() {

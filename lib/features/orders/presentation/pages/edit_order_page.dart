@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/di/injection_container.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../products/domain/entities/product.dart';
-import '../../domain/entities/order.dart';
-import '../cubit/create_order_cubit.dart';
+import 'package:orderly/core/di/injection_container.dart';
+import 'package:orderly/core/theme/app_colors.dart';
+import 'package:orderly/features/products/domain/entities/product.dart';
+import 'package:orderly/features/orders/domain/entities/order.dart';
+import 'package:orderly/features/orders/presentation/cubit/create_order_cubit.dart';
 
 class EditOrderPage extends StatelessWidget {
   final Order order;

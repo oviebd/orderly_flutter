@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../orders/presentation/pages/create_order_page.dart';
-import '../../../orders/presentation/pages/orders_tab.dart';
-import '../../../customers/presentation/pages/customers_tab.dart';
-import '../../../products/presentation/pages/products_tab.dart';
-import 'dashboard_tab.dart';
+import 'package:orderly/core/theme/app_colors.dart';
+import 'package:orderly/features/orders/presentation/pages/orders_tab.dart';
+import 'package:orderly/features/customers/presentation/pages/customers_tab.dart';
+import 'package:orderly/features/products/presentation/pages/products_tab.dart';
+import 'package:orderly/core/navigation/app_routes.dart';
+import 'package:orderly/features/home/presentation/pages/dashboard_tab.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -27,10 +27,7 @@ class _MainScreenState extends State<MainScreen> {
   void _onTabTapped(int index) {
     if (index == 2) {
       // Create Order Action
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const CreateOrderPage()),
-      );
+      Navigator.pushNamed(context, AppRoutes.createOrder);
     } else {
       setState(() {
         _currentIndex = index;

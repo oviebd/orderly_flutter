@@ -8,6 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/home/presentation/pages/main_screen.dart';
+import 'core/navigation/app_routes.dart';
+import 'core/navigation/route_generator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +38,7 @@ class OrderlyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Orderly',
         theme: AppTheme.lightTheme,
+        onGenerateRoute: RouteGenerator.generateRoute,
         home: BlocBuilder<AuthCubit, AuthState>(
           builder: (context, state) {
             if (state is Authenticated) {

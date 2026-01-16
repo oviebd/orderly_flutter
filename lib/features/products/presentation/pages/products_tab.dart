@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/di/injection_container.dart';
-import '../../domain/entities/product.dart';
-import '../cubit/products_cubit.dart';
-import 'create_product_page.dart';
-import 'product_details_page.dart';
+import 'package:orderly/core/di/injection_container.dart';
+import 'package:orderly/features/products/domain/entities/product.dart';
+import 'package:orderly/core/theme/app_colors.dart';
+import 'package:orderly/core/navigation/app_routes.dart';
+import 'package:orderly/features/products/presentation/cubit/products_cubit.dart';
 
 class ProductsTab extends StatelessWidget {
   const ProductsTab({super.key});
@@ -78,7 +78,12 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
         Padding(
           padding: const EdgeInsets.only(right: 16),
           child: ElevatedButton.icon(
-            onPressed: () => _navigateToCreateProduct(context),
+            onPressed: () async {
+              final result = await Navigator.pushNamed(context, AppRoutes.createProduct);
+              if (result == true && context.mounted) {
+                context.read<ProductsCubit>().loadProducts();
+              }
+            },
             icon: const Icon(Icons.add, size: 20),
             label: const Text('Add'),
             style: ElevatedButton.styleFrom(
@@ -158,7 +163,7 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+            color: const Color(0xFF0F172A).withOpacity(0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -174,7 +179,7 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
               gradient: LinearGradient(
                 colors: [
                   const Color(0xFF10B981),
-                  const Color(0xFF10B981).withValues(alpha: 0.7),
+                  const Color(0xFF10B981).withOpacity(0.7),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -245,7 +250,7 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withValues(alpha: 0.1),
+              color: const Color(0xFF10B981).withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -270,7 +275,7 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withValues(alpha: 0.1),
+              color: const Color(0xFF10B981).withOpacity(0.1),
               borderRadius: BorderRadius.circular(24),
             ),
             child: const Icon(
@@ -298,7 +303,12 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () => _navigateToCreateProduct(context),
+            onPressed: () async {
+              final result = await Navigator.pushNamed(context, AppRoutes.createProduct);
+              if (result == true && context.mounted) {
+                context.read<ProductsCubit>().loadProducts();
+              }
+            },
             icon: const Icon(Icons.add, size: 20),
             label: const Text('Add Product'),
             style: ElevatedButton.styleFrom(
@@ -375,20 +385,18 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
   }
 
   Future<void> _navigateToCreateProduct(BuildContext context) async {
-    final result = await Navigator.push<Product>(
-      context,
-      MaterialPageRoute(builder: (_) => const CreateProductPage()),
-    );
+    final result = await Navigator.pushNamed(context, AppRoutes.createProduct);
 
-    if (result != null && context.mounted) {
-      context.read<ProductsCubit>().addProductToList(result);
+    if (result == true && context.mounted) {
+      context.read<ProductsCubit>().loadProducts();
     }
   }
 
   Future<void> _navigateToProductDetails(BuildContext context, Product product) async {
-    await Navigator.push(
+    await Navigator.pushNamed(
       context,
-      MaterialPageRoute(builder: (_) => ProductDetailsPage(product: product)),
+      AppRoutes.productDetails,
+      arguments: product,
     );
     // Refresh list if needed when coming back
     if (context.mounted) {

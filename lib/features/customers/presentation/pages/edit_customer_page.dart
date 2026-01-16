@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../core/di/injection_container.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/customer.dart';
-import '../cubit/create_customer_cubit.dart';
+import 'package:orderly/core/di/injection_container.dart';
+import 'package:orderly/core/theme/app_colors.dart';
+import 'package:orderly/features/customers/domain/entities/customer.dart';
+import 'package:orderly/features/customers/presentation/cubit/create_customer_cubit.dart';
 
 class EditCustomerPage extends StatelessWidget {
   final Customer customer;

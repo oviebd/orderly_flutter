@@ -2,12 +2,13 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-
-import '../../../../core/di/injection_container.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../orders/domain/entities/order.dart';
-import '../../../auth/presentation/cubit/auth_cubit.dart';
-import '../cubit/dashboard_cubit.dart';
+import 'package:orderly/core/di/injection_container.dart';
+import 'package:orderly/core/theme/app_colors.dart';
+import 'package:orderly/features/orders/domain/entities/order.dart';
+import 'package:orderly/features/orders/presentation/cubit/order_cubit.dart';
+import 'package:orderly/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:orderly/core/navigation/app_routes.dart';
+import 'package:orderly/features/home/presentation/cubit/dashboard_cubit.dart';
 
 class DashboardTab extends StatelessWidget {
   const DashboardTab({super.key});
@@ -716,65 +717,82 @@ class _DashboardView extends StatelessWidget {
               ),
             )
           else
-            ...state.recentOrders.take(5).map((order) => _buildRecentOrderRow(order)),
+            ...state.recentOrders.take(5).map((order) => _buildRecentOrderRow(context, order)),
         ],
       ),
     );
   }
 
-  Widget _buildRecentOrderRow(Order order) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9))),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(10),
+  Widget _buildRecentOrderRow(BuildContext context, Order order) {
+    return InkWell(
+      onTap: () {
+        // We need OrderCubit here, but DashboardTab doesn't have it by default.
+        // However, we can use the main one if provided or just push without it if DetailsPage can handle it.
+        // Actually, OrderDetailsPage depends on OrderCubit for status updates.
+        // We can inject it or just use a GetIt instance.
+        final orderCubit = sl<OrderCubit>();
+        Navigator.pushNamed(
+          context,
+          AppRoutes.orderDetails,
+          arguments: {
+            'order': order,
+            'orderCubit': orderCubit,
+          },
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9))),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                (order.customerName?.isNotEmpty ?? false) ? order.customerName![0].toUpperCase() : '?',
+                style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF64748B)),
+              ),
             ),
-            child: Text(
-              (order.customerName?.isNotEmpty ?? false) ? order.customerName![0].toUpperCase() : '?',
-              style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF64748B)),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    order.customerName ?? 'Unknown',
+                    style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
+                  ),
+                  Text(
+                    order.products.map((p) => p.name).join(', '),
+                    style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  order.customerName ?? 'Unknown',
-                  style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
+                  '৳${order.totalAmount.toInt()}',
+                  style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                 ),
                 Text(
-                  order.products.map((p) => p.name).join(', '),
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  DateFormat('MMM dd, h:mm a').format(order.orderDate),
+                  style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
                 ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '৳${order.totalAmount.toInt()}',
-                style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
-              ),
-              Text(
-                DateFormat('MMM dd, h:mm a').format(order.orderDate),
-                style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
-              ),
-            ],
-          ),
-          const SizedBox(width: 20),
-          _buildStatusBadge(order.status),
-        ],
+            const SizedBox(width: 20),
+            _buildStatusBadge(order.status),
+          ],
+        ),
       ),
     );
   }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../domain/entities/product.dart';
-import '../../../../core/theme/app_colors.dart';
-import 'edit_product_page.dart';
+import 'package:orderly/features/products/domain/entities/product.dart';
+import 'package:orderly/core/theme/app_colors.dart';
+import 'package:orderly/core/navigation/app_routes.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final Product product;
@@ -35,11 +35,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             onPressed: () async {
-              final updated = await Navigator.push<Product>(
+              final updated = await Navigator.pushNamed<Product>(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => EditProductPage(product: product),
-                ),
+                AppRoutes.editProduct,
+                arguments: product,
               );
               if (updated != null && mounted) {
                 setState(() {

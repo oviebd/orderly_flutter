@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/entities/order.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../cubit/order_cubit.dart';
-import 'edit_order_page.dart';
+import 'package:orderly/features/orders/domain/entities/order.dart';
+import 'package:orderly/core/theme/app_colors.dart';
+import 'package:orderly/features/orders/presentation/cubit/order_cubit.dart';
+import 'package:orderly/core/navigation/app_routes.dart';
 
 class OrderDetailsPage extends StatefulWidget {
   final Order order;
@@ -37,11 +37,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             onPressed: () async {
-              final updated = await Navigator.push<bool>(
+              final updated = await Navigator.pushNamed<bool>(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => EditOrderPage(order: order),
-                ),
+                AppRoutes.editOrder,
+                arguments: order,
               );
               if (updated == true && mounted) {
                 // Since EditOrderPage doesn't return the Order object but a bool,

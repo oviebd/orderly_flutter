@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/di/injection_container.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
-import '../cubit/order_cubit.dart'; // Ensure correct import
-import '../widgets/order_card.dart';
-import 'order_details_page.dart';
-
+import 'package:orderly/core/di/injection_container.dart';
+import 'package:orderly/core/theme/app_colors.dart';
+import 'package:orderly/core/theme/app_text_styles.dart';
+import 'package:orderly/features/orders/presentation/cubit/order_cubit.dart';
+import 'package:orderly/features/orders/presentation/widgets/order_card.dart';
+import 'package:orderly/features/orders/presentation/pages/order_details_page.dart';
+import 'package:orderly/core/navigation/app_routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class OrdersTab extends StatefulWidget {
@@ -139,14 +139,13 @@ class _OrdersTabState extends State<OrdersTab> {
                         return InkWell(
                           onTap: () {
                             final orderCubit = context.read<OrderCubit>();
-                            Navigator.push(
+                            Navigator.pushNamed(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => BlocProvider.value(
-                                  value: orderCubit,
-                                  child: OrderDetailsPage(order: order),
-                                ),
-                              ),
+                              AppRoutes.orderDetails,
+                              arguments: {
+                                'order': order,
+                                'orderCubit': orderCubit,
+                              },
                             ).then((_) {
                               if (context.mounted) {
                                 orderCubit.fetchOrders(email);
