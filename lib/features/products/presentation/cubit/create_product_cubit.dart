@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:orderly/core/services/business_id_provider.dart';
 
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
@@ -9,13 +10,14 @@ part 'create_product_state.dart';
 
 class CreateProductCubit extends Cubit<CreateProductState> {
   final ProductRepository _productRepository;
+  final BusinessIdProvider _businessIdProvider = BusinessIdProvider();
 
   CreateProductCubit({
     required ProductRepository productRepository,
   })  : _productRepository = productRepository,
         super(const CreateProductState());
 
-  String get _businessId => FirebaseAuth.instance.currentUser?.email ?? '';
+  String get _email => FirebaseAuth.instance.currentUser?.email ?? '';
   String get _ownerId => FirebaseAuth.instance.currentUser?.uid ?? '';
 
   void initForEdit(Product product) {
@@ -54,9 +56,12 @@ class CreateProductCubit extends Cubit<CreateProductState> {
     emit(state.copyWith(isSubmitting: true, clearError: true));
 
     try {
+      // Get the actual businessId from Firestore
+      final businessId = await _businessIdProvider.getBusinessId();
+
       final product = Product(
         id: state.isEditing ? state.existingProduct!.id : '',
-        businessId: _businessId,
+        businessId: businessId,
         ownerId: _ownerId,
         name: state.name,
         code: state.code,
@@ -67,8 +72,8 @@ class CreateProductCubit extends Cubit<CreateProductState> {
       );
 
       final result = state.isEditing
-          ? await _productRepository.updateProduct(_businessId, product)
-          : await _productRepository.createProduct(_businessId, product);
+          ? await _productRepository.updateProduct(_email, product)
+          : await _productRepository.createProduct(_email, product);
 
       result.fold(
         (failure) => emit(state.copyWith(
@@ -93,3 +98,4 @@ class CreateProductCubit extends Cubit<CreateProductState> {
     emit(state.copyWith(clearError: true));
   }
 }
+

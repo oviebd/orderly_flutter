@@ -11,10 +11,7 @@ class CustomersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<CustomersCubit>()..loadCustomers(),
-      child: const _CustomersTabView(),
-    );
+    return const _CustomersTabView();
   }
 }
 
@@ -375,7 +372,7 @@ class _CustomersTabViewState extends State<_CustomersTabView> {
 
   Future<void> _navigateToCreateCustomer(BuildContext context) async {
     final result = await Navigator.pushNamed(context, AppRoutes.createCustomer);
-    if (result == true && context.mounted) {
+    if (result != null && context.mounted) {
       context.read<CustomersCubit>().loadCustomers();
     }
   }

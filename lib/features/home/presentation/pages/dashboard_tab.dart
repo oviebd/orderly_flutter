@@ -15,10 +15,7 @@ class DashboardTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<DashboardCubit>()..loadDashboard(),
-      child: const _DashboardView(),
-    );
+    return const _DashboardView();
   }
 }
 

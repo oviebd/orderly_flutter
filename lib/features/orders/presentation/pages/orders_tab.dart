@@ -32,18 +32,16 @@ class _OrdersTabState extends State<OrdersTab> {
     final user = FirebaseAuth.instance.currentUser;
     final email = user?.email ?? '';
 
-    return BlocProvider(
-      create: (context) => sl<OrderCubit>()..fetchOrders(email),
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
-        appBar: AppBar(
-          title: const Text('Orders', style: TextStyle(color: Colors.black)),
-          backgroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: true,
-          iconTheme: const IconThemeData(color: Colors.black),
-        ),
-        body: Column(
+    return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground,
+      appBar: AppBar(
+        title: const Text('Orders', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
+      body: Column(
           children: [
             // Search Bar
             Padding(
@@ -203,7 +201,6 @@ class _OrdersTabState extends State<OrdersTab> {
               ),
             ),
           ],
-        ),
       ),
     );
   }

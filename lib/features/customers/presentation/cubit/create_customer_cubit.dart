@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:orderly/core/services/business_id_provider.dart';
 
 import '../../domain/entities/customer.dart';
 import '../../domain/repositories/customer_repository.dart';
@@ -9,13 +10,14 @@ part 'create_customer_state.dart';
 
 class CreateCustomerCubit extends Cubit<CreateCustomerState> {
   final CustomerRepository _customerRepository;
+  final BusinessIdProvider _businessIdProvider = BusinessIdProvider();
 
   CreateCustomerCubit({
     required CustomerRepository customerRepository,
   })  : _customerRepository = customerRepository,
         super(const CreateCustomerState());
 
-  String get _businessId => FirebaseAuth.instance.currentUser?.email ?? '';
+  String get _email => FirebaseAuth.instance.currentUser?.email ?? '';
   String get _ownerId => FirebaseAuth.instance.currentUser?.uid ?? '';
 
   void initForEdit(Customer customer) {
@@ -59,8 +61,12 @@ class CreateCustomerCubit extends Cubit<CreateCustomerState> {
     emit(state.copyWith(isSubmitting: true, clearError: true));
 
     try {
+      // Get the actual businessId from Firestore
+      final businessId = await _businessIdProvider.getBusinessId();
+
       final customer = Customer(
         id: state.isEditing ? state.existingCustomer!.id : '',
+        businessId: businessId,
         ownerId: _ownerId,
         name: state.name,
         phone: state.phone,
@@ -72,8 +78,8 @@ class CreateCustomerCubit extends Cubit<CreateCustomerState> {
       );
 
       final result = state.isEditing
-          ? await _customerRepository.updateCustomer(_businessId, customer)
-          : await _customerRepository.createCustomer(_businessId, customer);
+          ? await _customerRepository.updateCustomer(_email, customer)
+          : await _customerRepository.createCustomer(_email, customer);
 
       result.fold(
         (failure) => emit(state.copyWith(

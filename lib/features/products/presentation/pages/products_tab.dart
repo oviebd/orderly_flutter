@@ -11,10 +11,7 @@ class ProductsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<ProductsCubit>()..loadProducts(),
-      child: const _ProductsTabView(),
-    );
+    return const _ProductsTabView();
   }
 }
 
@@ -80,7 +77,7 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
           child: ElevatedButton.icon(
             onPressed: () async {
               final result = await Navigator.pushNamed(context, AppRoutes.createProduct);
-              if (result == true && context.mounted) {
+              if (result != null && context.mounted) {
                 context.read<ProductsCubit>().loadProducts();
               }
             },
@@ -305,7 +302,7 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
           ElevatedButton.icon(
             onPressed: () async {
               final result = await Navigator.pushNamed(context, AppRoutes.createProduct);
-              if (result == true && context.mounted) {
+              if (result != null && context.mounted) {
                 context.read<ProductsCubit>().loadProducts();
               }
             },
@@ -387,7 +384,7 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
   Future<void> _navigateToCreateProduct(BuildContext context) async {
     final result = await Navigator.pushNamed(context, AppRoutes.createProduct);
 
-    if (result == true && context.mounted) {
+    if (result != null && context.mounted) {
       context.read<ProductsCubit>().loadProducts();
     }
   }

@@ -4,6 +4,7 @@ import '../../domain/entities/customer.dart';
 class CustomerModel extends Customer {
   const CustomerModel({
     required super.id,
+    required super.businessId,
     required super.ownerId,
     required super.name,
     required super.phone,
@@ -18,6 +19,7 @@ class CustomerModel extends Customer {
   factory CustomerModel.fromJson(Map<String, dynamic> json, String id) {
     return CustomerModel(
       id: id,
+      businessId: json['businessId'] ?? '',
       ownerId: json['ownerId'] ?? '',
       name: json['name'] ?? '',
       phone: json['phone'] ?? '',
@@ -32,6 +34,7 @@ class CustomerModel extends Customer {
 
   Map<String, dynamic> toJson() {
     return {
+      'businessId': businessId,
       'ownerId': ownerId,
       'name': name,
       'phone': phone,
@@ -48,6 +51,7 @@ class CustomerModel extends Customer {
   factory CustomerModel.fromEntity(Customer customer) {
     return CustomerModel(
       id: customer.id,
+      businessId: customer.businessId,
       ownerId: customer.ownerId,
       name: customer.name,
       phone: customer.phone,

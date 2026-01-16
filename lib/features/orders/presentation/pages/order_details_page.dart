@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orderly/features/orders/domain/entities/order.dart';
@@ -37,19 +38,14 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             onPressed: () async {
-              final updated = await Navigator.pushNamed<bool>(
+              final updated = await Navigator.pushNamed(
                 context,
                 AppRoutes.editOrder,
                 arguments: order,
               );
               if (updated == true && mounted) {
-                // Since EditOrderPage doesn't return the Order object but a bool,
-                // and we don't have a GetOrderById query easily available here without repository,
-                // for now we'll just pop back to list to refresh if edited.
-                // Alternatively, we could fetch it.
-                // But wait, the list refreshes on return from DetailsPage.
-                // Let's just pop if edited to ensure consistency.
-                Navigator.pop(context);
+                // Return true to parent to trigger reload
+                Navigator.pop(context, true);
               }
             },
           ),
@@ -343,8 +339,9 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
   }
 
   void _updateStatus(BuildContext context, String newStatus) {
-    // Correct method name and passing businessId
-    context.read<OrderCubit>().updateStatus(order.id, newStatus, order.businessId);
+    final email = FirebaseAuth.instance.currentUser?.email ?? '';
+    // Use email for Firestore document path
+    context.read<OrderCubit>().updateStatus(order.id, newStatus, email);
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Order status updated to $newStatus')),

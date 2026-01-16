@@ -101,6 +101,7 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
 
     return CustomerModel(
       id: docRef.id,
+      businessId: customer.businessId,
       ownerId: customer.ownerId,
       name: customer.name,
       phone: customer.phone,

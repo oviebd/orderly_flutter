@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:orderly/core/services/business_id_provider.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 part 'auth_state.dart';
@@ -97,6 +98,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> signOut() async {
     await _authRepository.signOut();
+    BusinessIdProvider().clearCache();
   }
 
   @override

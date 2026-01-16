@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:orderly/core/services/business_id_provider.dart';
 
 import '../../../customers/domain/entities/customer.dart';
 import '../../../customers/domain/repositories/customer_repository.dart';
@@ -16,6 +17,7 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
   final CustomerRepository _customerRepository;
   final ProductRepository _productRepository;
   final OrderRepository _orderRepository;
+  final BusinessIdProvider _businessIdProvider = BusinessIdProvider();
 
   CreateOrderCubit({
     required CustomerRepository customerRepository,
@@ -26,7 +28,7 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
         _orderRepository = orderRepository,
         super(CreateOrderState.initial());
 
-  String get _businessId =>
+  String get _email =>
       FirebaseAuth.instance.currentUser?.email ?? '';
 
   String get _ownerId =>
@@ -75,7 +77,7 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
     ));
 
     // Fetch full customer details to get phone number
-    final customerResult = await _customerRepository.getCustomerById(_businessId, order.customerId);
+    final customerResult = await _customerRepository.getCustomerById(_email, order.customerId);
     customerResult.fold(
       (failure) => emit(state.copyWith(error: 'Failed to load customer details: ${failure.message}')),
       (customer) {
@@ -102,7 +104,7 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
 
     emit(state.copyWith(isSearchingCustomers: true));
     
-    final result = await _customerRepository.searchCustomers(_businessId, query);
+    final result = await _customerRepository.searchCustomers(_email, query);
     
     result.fold(
       (failure) => emit(state.copyWith(
@@ -193,7 +195,7 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
   Future<void> searchProducts(String query) async {
     emit(state.copyWith(isSearchingProducts: true));
     
-    final result = await _productRepository.searchProducts(_businessId, query);
+    final result = await _productRepository.searchProducts(_email, query);
     
     result.fold(
       (failure) => emit(state.copyWith(
@@ -327,14 +329,18 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
     emit(state.copyWith(isSubmitting: true, clearError: true));
 
     try {
+      // Get the actual businessId from Firestore
+      final businessId = await _businessIdProvider.getBusinessId();
+
       // Create new customer if needed
       String customerId = state.selectedCustomer!.customerId ?? '';
       
       if (!state.selectedCustomer!.isExisting) {
         final customerResult = await _customerRepository.createCustomer(
-          _businessId,
+          _email,
           Customer(
             id: '',
+            businessId: businessId,
             ownerId: _ownerId,
             name: state.selectedCustomer!.name,
             phone: state.selectedCustomer!.phone,
@@ -377,7 +383,7 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
       // Create order
       final order = Order(
         id: state.isEditing ? state.existingOrder!.id : '',
-        businessId: _businessId,
+        businessId: businessId,
         ownerId: _ownerId,
         customerId: customerId,
         customerName: state.selectedCustomer!.name,
