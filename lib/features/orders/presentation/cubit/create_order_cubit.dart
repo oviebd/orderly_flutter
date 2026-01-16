@@ -407,8 +407,8 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
       );
 
       final result = state.isEditing
-          ? await _orderRepository.updateOrder(order)
-          : await _orderRepository.createOrder(order);
+          ? await _orderRepository.updateOrder(_email, order)
+          : await _orderRepository.createOrder(_email, order);
 
       result.fold(
         (failure) => emit(state.copyWith(

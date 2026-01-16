@@ -22,7 +22,7 @@ class OrderCubit extends Cubit<OrderState> {
   Future<void> createOrder(Order order) async {
     // We assume optimistic update or re-fetch. Ideally re-fetch or add to list.
     emit(OrderLoading());
-    final result = await _orderRepository.createOrder(order);
+    final result = await _orderRepository.createOrder(order.businessId, order);
     result.fold(
       (failure) => emit(OrderError(failure.message)),
       (_) {

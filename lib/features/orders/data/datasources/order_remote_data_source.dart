@@ -4,8 +4,8 @@ import '../../domain/entities/order.dart';
 
 abstract class OrderRemoteDataSource {
   Future<List<OrderModel>> getOrders(String businessId);
-  Future<void> createOrder(OrderModel order);
-  Future<void> updateOrder(OrderModel order);
+  Future<void> createOrder(String businessId, OrderModel order);
+  Future<void> updateOrder(String businessId, OrderModel order);
   Future<void> updateOrderStatus(String businessId, String orderId, String status);
 }
 
@@ -41,12 +41,12 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   }
 
   @override
-  Future<void> createOrder(OrderModel order) async {
+  Future<void> createOrder(String businessId, OrderModel order) async {
     // We let Firestore generate ID if order.id is empty, but we might have generated it locally.
     // If id is provided, set.
     // For creation, we need to know the path.
-    // However, OrderModel stores 'businessId' which we are using as email.
-    final path = _firestore.collection('BusinessAccounts').doc(order.businessId).collection('orders');
+    // businessId here is the email used as the document index in BusinessAccounts
+    final path = _firestore.collection('BusinessAccounts').doc(businessId).collection('orders');
     
     if (order.id.isNotEmpty) {
         await path.doc(order.id).set(order.toJson());
@@ -56,10 +56,10 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   }
 
   @override
-  Future<void> updateOrder(OrderModel order) async {
+  Future<void> updateOrder(String businessId, OrderModel order) async {
     await _firestore
         .collection('BusinessAccounts')
-        .doc(order.businessId)
+        .doc(businessId)
         .collection('orders')
         .doc(order.id)
         .update(order.toJson());

@@ -74,7 +74,7 @@ class OrderRepositoryImpl implements OrderRepository {
   }
 
   @override
-  Future<Either<Failure, void>> createOrder(Order order) async {
+  Future<Either<Failure, void>> createOrder(String businessId, Order order) async {
     try {
       // Convert Entity to Model
       final orderModel = OrderModel(
@@ -100,7 +100,7 @@ class OrderRepositoryImpl implements OrderRepository {
                 ))
             .toList(),
       );
-      await _remoteDataSource.createOrder(orderModel);
+      await _remoteDataSource.createOrder(businessId, orderModel);
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -108,7 +108,7 @@ class OrderRepositoryImpl implements OrderRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateOrder(Order order) async {
+  Future<Either<Failure, void>> updateOrder(String businessId, Order order) async {
     try {
       final orderModel = OrderModel(
         id: order.id,
@@ -133,7 +133,7 @@ class OrderRepositoryImpl implements OrderRepository {
                 ))
             .toList(),
       );
-      await _remoteDataSource.updateOrder(orderModel);
+      await _remoteDataSource.updateOrder(businessId, orderModel);
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
