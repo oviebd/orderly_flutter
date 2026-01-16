@@ -25,6 +25,11 @@ import '../../features/products/data/datasources/product_remote_data_source.dart
 import '../../features/products/presentation/cubit/create_product_cubit.dart';
 import '../../features/products/presentation/cubit/products_cubit.dart';
 
+import '../../features/profile/domain/repositories/profile_repository.dart';
+import '../../features/profile/data/repositories/profile_repository_impl.dart';
+import '../../features/profile/data/datasources/profile_remote_data_source.dart';
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -67,5 +72,10 @@ Future<void> init() async {
   ));
   sl.registerLazySingleton<OrderRepository>(() => OrderRepositoryImpl(sl()));
   sl.registerLazySingleton<OrderRemoteDataSource>(() => OrderRemoteDataSourceImpl(sl()));
+
+  // Profile Feature
+  sl.registerFactory(() => ProfileCubit(profileRepository: sl(), auth: sl()));
+  sl.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(sl()));
+  sl.registerLazySingleton<ProfileRemoteDataSource>(() => ProfileRemoteDataSourceImpl(sl()));
 }
 

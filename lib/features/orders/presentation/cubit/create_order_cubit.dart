@@ -32,7 +32,7 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
   String get _ownerId =>
       FirebaseAuth.instance.currentUser?.uid ?? '';
 
-  void initForEdit(Order order) {
+  void initForEdit(Order order) async {
     final productsList = order.products
         .map((p) => OrderProductItem(
               productId: p.id,
@@ -56,7 +56,7 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
     emit(state.copyWith(
       selectedCustomer: SelectedCustomer(
         customerId: order.customerId,
-        phone: '', // We don't have phone in Order entity directly, usually fetched
+        phone: '', // Will update after fetch
         name: order.customerName ?? '',
         address: order.address,
         isExisting: true,
@@ -64,6 +64,7 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
       orderSource: source,
       products: productsList,
       deliveryCharge: order.deliveryCharge,
+      status: order.status,
       orderDate: order.orderDate,
       orderTime: TimeOfDay(hour: order.orderDate.hour, minute: order.orderDate.minute),
       deliveryDate: order.deliveryDate,
@@ -72,6 +73,23 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
       existingOrder: order,
       isEditing: true,
     ));
+
+    // Fetch full customer details to get phone number
+    final customerResult = await _customerRepository.getCustomerById(_businessId, order.customerId);
+    customerResult.fold(
+      (failure) => emit(state.copyWith(error: 'Failed to load customer details: ${failure.message}')),
+      (customer) {
+        if (customer != null) {
+          emit(state.copyWith(
+            selectedCustomer: state.selectedCustomer?.copyWith(
+              phone: customer.phone,
+              name: customer.name,
+              address: customer.address,
+            ),
+          ));
+        }
+      },
+    );
   }
 
   // ==================== Customer Methods ====================
@@ -294,6 +312,10 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
     emit(state.copyWith(notes: notes));
   }
 
+  void setOrderStatus(String status) {
+    emit(state.copyWith(status: status));
+  }
+
   // ==================== Submit Methods ====================
 
   Future<void> submitOrder() async {
@@ -359,7 +381,7 @@ class CreateOrderCubit extends Cubit<CreateOrderState> {
         ownerId: _ownerId,
         customerId: customerId,
         customerName: state.selectedCustomer!.name,
-        status: state.isEditing ? state.existingOrder!.status : 'pending',
+        status: state.status,
         source: state.orderSource.name,
         address: state.selectedCustomer!.address,
         notes: state.notes,

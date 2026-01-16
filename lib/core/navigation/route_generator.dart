@@ -15,6 +15,9 @@ import 'package:orderly/features/customers/domain/entities/customer.dart';
 import 'package:orderly/features/customers/presentation/pages/create_customer_page.dart';
 import 'package:orderly/features/customers/presentation/pages/edit_customer_page.dart';
 import 'package:orderly/features/customers/presentation/pages/customer_details_page.dart';
+import 'package:orderly/features/profile/presentation/pages/profile_page.dart';
+import 'package:orderly/features/profile/presentation/pages/edit_profile_page.dart';
+import 'package:orderly/features/profile/domain/entities/business_profile.dart';
 import 'package:orderly/core/navigation/app_routes.dart';
 
 class RouteGenerator {
@@ -83,6 +86,16 @@ class RouteGenerator {
       case AppRoutes.editCustomer:
         if (args is Customer) {
           return MaterialPageRoute<Customer>(builder: (_) => EditCustomerPage(customer: args));
+        }
+        return _errorRoute();
+
+      // Profile
+      case AppRoutes.profile:
+        return MaterialPageRoute(builder: (_) => const ProfilePage());
+
+      case AppRoutes.editProfile:
+        if (args is BusinessProfile) {
+          return MaterialPageRoute<BusinessProfile>(builder: (_) => EditProfilePage(profile: args));
         }
         return _errorRoute();
 

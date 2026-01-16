@@ -50,6 +50,9 @@ class _OrdersTabState extends State<OrdersTab> {
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 controller: _searchController,
+                onChanged: (_) {
+                  setState(() {}); // Trigger rebuild to update local filter
+                },
                 decoration: InputDecoration(
                   hintText: 'Search orders by customer, phone...',
                   prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
@@ -83,7 +86,6 @@ class _OrdersTabState extends State<OrdersTab> {
                       onSelected: (bool selected) {
                         setState(() {
                           _selectedFilter = filter;
-                          // TODO: Implement filtering logic in Cubit or locally
                         });
                       },
                       labelStyle: TextStyle(
@@ -91,8 +93,7 @@ class _OrdersTabState extends State<OrdersTab> {
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                       backgroundColor: Colors.white,
-                      selectedColor: AppColors.warning.withOpacity(0.2), // Light yellow for selected, purely visual example
-                      // Ideal selected color logic depends on filter type (Green for completed etc)
+                      selectedColor: AppColors.warning.withOpacity(0.2), 
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                         side: BorderSide(color: isSelected ? Colors.transparent : AppColors.border), 
@@ -108,12 +109,7 @@ class _OrdersTabState extends State<OrdersTab> {
             // Order List
             Expanded(
               child: BlocConsumer<OrderCubit, OrderState>(
-                 listener: (context, state) {
-                  if (state is OrderError) {
-                    // Show snackbar or visual cue?
-                    // But we handle it in builder too.
-                  }
-                 },
+                 listener: (context, state) {},
                  builder: (context, state) {
                   if (state is OrderLoading) {
                     return const Center(child: CircularProgressIndicator());
@@ -122,10 +118,20 @@ class _OrdersTabState extends State<OrdersTab> {
                       return const Center(child: Text('No orders found'));
                     }
                     
+                    final query = _searchController.text.toLowerCase();
+                    
                     // Filter list locally for now (MVP)
-                    final filteredOrders = _selectedFilter == 'All' 
-                        ? state.orders 
-                        : state.orders.where((o) => o.status.toLowerCase() == _selectedFilter.toLowerCase()).toList();
+                    final filteredOrders = state.orders.where((o) {
+                      // Filter by status
+                      final matchesStatus = _selectedFilter == 'All' || o.status.toLowerCase() == _selectedFilter.toLowerCase();
+                      
+                      // Filter by search query (name or phone)
+                      final matchesSearch = query.isEmpty || 
+                          (o.customerName?.toLowerCase().contains(query) ?? false) ||
+                          (o.customerPhone?.toLowerCase().contains(query) ?? false);
+                      
+                      return matchesStatus && matchesSearch;
+                    }).toList();
 
                     if (filteredOrders.isEmpty) {
                          return const Center(child: Text('No orders match filter'));
@@ -152,7 +158,12 @@ class _OrdersTabState extends State<OrdersTab> {
                               }
                             });
                           },
-                          child: OrderCard(order: order),
+                          child: OrderCard(
+                            order: order,
+                            onStatusChanged: (newStatus) {
+                              context.read<OrderCubit>().updateStatus(order.id, newStatus, email);
+                            },
+                          ),
                         );
                       },
                     );

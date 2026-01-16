@@ -101,8 +101,15 @@ class _DashboardView extends StatelessWidget {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.logout_rounded, color: Color(0xFF64748B)),
-          onPressed: () => context.read<AuthCubit>().signOut(),
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.profile),
+          icon: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.person_outline_rounded, color: AppColors.primary, size: 22),
+          ),
         ),
         const SizedBox(width: 8),
       ],

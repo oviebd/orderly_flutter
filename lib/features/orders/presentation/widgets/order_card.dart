@@ -7,8 +7,9 @@ import 'package:intl/intl.dart';
 class OrderCard extends StatelessWidget {
   final Order order;
   final VoidCallback? onTap;
+  final Function(String)? onStatusChanged;
 
-  const OrderCard({super.key, required this.order, this.onTap});
+  const OrderCard({super.key, required this.order, this.onTap, this.onStatusChanged});
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
@@ -19,7 +20,7 @@ class OrderCard extends StatelessWidget {
       case 'cancelled':
         return AppColors.error;
       case 'processing':
-        return AppColors.info;
+        return AppColors.primary;
       default:
         return AppColors.textSecondary;
     }
@@ -28,117 +29,119 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(order.status);
-    final currencyFormat = NumberFormat.simpleCurrency(name: 'BDT'); // Assuming BDT based on screenshot (৳)
-    // Or uses symbol if provided. Screenshot shows '৳8,000'.
     
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: IntrinsicHeight(
-          child: Row(
-            children: [
-              // Left Color Strip
-              Container(
-                width: 4,
-                color: statusColor,
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header: Name, Icon, Source, Price
-                      Row(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    order.customerName ?? order.customerId, 
-                                    style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  "(${order.source})",
-                                   style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8), // Gap between name section and price
                           Text(
-                            '৳${order.totalAmount.toStringAsFixed(0)}',
-                            style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
+                            '${order.customerName ?? 'Unknown Customer'} (${order.source})',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${_formatDate(order.orderDate)} ➔ ${_formatDate(order.deliveryDate)}',
+                            style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      // Products summary
-                      Text(
-                        _getProductSummary(order.products),
-                         style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
-                         maxLines: 1,
-                         overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-                      // Footer: Date and Status Badge
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.access_time, size: 14, color: AppColors.textTertiary),
-                              const SizedBox(width: 4),
-                              Text(
-                                _formatDate(order.orderDate),
-                                style: AppTextStyles.bodySmall.copyWith(color: AppColors.textTertiary),
-                              ),
-                            ],
-                          ),
-                          _buildStatusBadge(order.status, statusColor),
-                        ],
-                      ),
-                    ],
-                  ),
+                    ),
+                    _buildStatusBadge(context, order.status, statusColor),
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                const Divider(height: 1),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _getProductSummary(order.products),
+                        style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Text(
+                      '৳${order.totalAmount.toInt()}',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.primary),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  Widget _buildStatusBadge(BuildContext context, String status, Color color) {
+    final statuses = ['Pending', 'Processing', 'Completed', 'Cancelled'];
 
-
-  Widget _buildStatusBadge(String status, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12),
+    return PopupMenuButton<String>(
+      onSelected: (newStatus) {
+        if (onStatusChanged != null) {
+          onStatusChanged!(newStatus);
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.5)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              status,
+              style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+            const Icon(Icons.arrow_drop_down, size: 16, color: Colors.grey),
+          ],
+        ),
       ),
-      child: Text(
-        status.toLowerCase(),
-        style: AppTextStyles.bodySmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-      ),
+      itemBuilder: (context) => statuses.map((s) {
+        return PopupMenuItem<String>(
+          value: s,
+          child: Text(s),
+        );
+      }).toList(),
     );
   }
 

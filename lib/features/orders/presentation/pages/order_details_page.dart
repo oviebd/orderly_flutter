@@ -183,7 +183,16 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           const SizedBox(height: 16),
           Text(order.customerName ?? 'Walk-in Customer', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
-          if (order.address.isNotEmpty)
+          if (order.customerPhone != null && order.customerPhone!.isNotEmpty)
+            Row(
+              children: [
+                const Icon(Icons.phone_outlined, size: 14, color: Color(0xFF64748B)),
+                const SizedBox(width: 6),
+                Text(order.customerPhone!, style: const TextStyle(fontSize: 14, color: Color(0xFF64748B))),
+              ],
+            ),
+          if (order.address.isNotEmpty) ...[
+            const SizedBox(height: 4),
             Row(
               children: [
                 const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF64748B)),
@@ -191,6 +200,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                 Expanded(child: Text(order.address, style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)))),
               ],
             ),
+          ],
         ],
       ),
     );

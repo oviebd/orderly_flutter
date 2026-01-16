@@ -109,6 +109,8 @@ class CreateOrderState extends Equatable {
   
   final String notes;
   
+  final String status;
+  
   final bool isSubmitting;
   final String? error;
   final bool isSuccess;
@@ -129,6 +131,7 @@ class CreateOrderState extends Equatable {
     required this.deliveryDate,
     this.deliveryTime,
     this.notes = '',
+    this.status = 'Pending',
     this.isSubmitting = false,
     this.error,
     this.isSuccess = false,
@@ -173,6 +176,7 @@ class CreateOrderState extends Equatable {
     TimeOfDay? deliveryTime,
     bool clearDeliveryTime = false,
     String? notes,
+    String? status,
     bool? isSubmitting,
     String? error,
     bool clearError = false,
@@ -194,6 +198,7 @@ class CreateOrderState extends Equatable {
       deliveryDate: deliveryDate ?? this.deliveryDate,
       deliveryTime: clearDeliveryTime ? null : (deliveryTime ?? this.deliveryTime),
       notes: notes ?? this.notes,
+      status: status ?? this.status,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       error: clearError ? null : (error ?? this.error),
       isSuccess: isSuccess ?? this.isSuccess,
@@ -217,6 +222,7 @@ class CreateOrderState extends Equatable {
         deliveryDate,
         deliveryTime,
         notes,
+        status,
         isSubmitting,
         error,
         isSuccess,

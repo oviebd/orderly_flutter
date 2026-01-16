@@ -71,6 +71,19 @@ class _EditOrderViewState extends State<_EditOrderView> {
           );
           context.read<CreateOrderCubit>().clearError();
         }
+
+        // Update controllers when customer data is finally loaded
+        if (state.selectedCustomer != null) {
+          if (_phoneController.text.isEmpty && state.selectedCustomer!.phone.isNotEmpty) {
+            _phoneController.text = state.selectedCustomer!.phone;
+          }
+          if (_nameController.text.isEmpty && state.selectedCustomer!.name.isNotEmpty) {
+            _nameController.text = state.selectedCustomer!.name;
+          }
+           if (_addressController.text.isEmpty && state.selectedCustomer!.address.isNotEmpty) {
+            _addressController.text = state.selectedCustomer!.address;
+          }
+        }
       },
       builder: (context, state) {
         return Scaffold(
@@ -92,6 +105,8 @@ class _EditOrderViewState extends State<_EditOrderView> {
                 const SizedBox(height: 16),
                 _buildSourceCard(context, state),
                 const SizedBox(height: 16),
+                _buildStatusCard(context, state),
+                const SizedBox(height: 16),
                 _buildProductsCard(context, state),
                 const SizedBox(height: 16),
                 _buildPricingCard(context, state),
@@ -110,21 +125,69 @@ class _EditOrderViewState extends State<_EditOrderView> {
   Widget _buildCustomerCard(BuildContext context, CreateOrderState state) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Customer', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          Row(
+            children: [
+              const Icon(Icons.person_pin_rounded, color: AppColors.primary, size: 20),
+              const SizedBox(width: 8),
+              const Text('Customer Information', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Name and Phone are visible but read-only as per requirements
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _nameController,
+                  enabled: false,
+                  decoration: InputDecoration(
+                    labelText: 'Name',
+                    prefixIcon: const Icon(Icons.person_outline),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  controller: _phoneController,
+                  enabled: false,
+                  decoration: InputDecoration(
+                    labelText: 'Phone',
+                    prefixIcon: const Icon(Icons.phone_outlined),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 16),
           TextField(
-            controller: _nameController,
-            decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
-            onChanged: (v) => context.read<CreateOrderCubit>().updateCustomerName(v),
-          ),
-          const SizedBox(height: 12),
-          TextField(
             controller: _addressController,
-            decoration: const InputDecoration(labelText: 'Address', border: OutlineInputBorder()),
+            maxLines: 2,
+            decoration: InputDecoration(
+              labelText: 'Delivery Address',
+              prefixIcon: const Icon(Icons.location_on_outlined),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
             onChanged: (v) => context.read<CreateOrderCubit>().updateCustomerAddress(v),
           ),
         ],
@@ -161,33 +224,189 @@ class _EditOrderViewState extends State<_EditOrderView> {
     );
   }
 
+  Widget _buildStatusCard(BuildContext context, CreateOrderState state) {
+    if (!state.isEditing) return const SizedBox.shrink();
+
+    final statuses = ['Pending', 'Processing', 'Completed', 'Cancelled'];
+    
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.info_outline_rounded, color: AppColors.primary, size: 20),
+              const SizedBox(width: 8),
+              const Text('Order Status', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: statuses.map((status) {
+              final isSelected = state.status.toLowerCase() == status.toLowerCase();
+              Color chipColor;
+              switch (status.toLowerCase()) {
+                case 'completed': chipColor = AppColors.success; break;
+                case 'cancelled': chipColor = AppColors.error; break;
+                case 'processing': chipColor = AppColors.primary; break;
+                default: chipColor = AppColors.warning;
+              }
+
+              return ChoiceChip(
+                label: Text(status),
+                selected: isSelected,
+                onSelected: (selected) {
+                  if (selected) {
+                    context.read<CreateOrderCubit>().setOrderStatus(status);
+                  }
+                },
+                selectedColor: chipColor.withValues(alpha: 0.2),
+                labelStyle: TextStyle(
+                  color: isSelected ? chipColor : AppColors.textSecondary,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(color: isSelected ? chipColor : AppColors.border),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildProductsCard(BuildContext context, CreateOrderState state) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Items', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Row(
+                children: [
+                  const Icon(Icons.shopping_bag_outlined, color: AppColors.primary, size: 20),
+                  const SizedBox(width: 8),
+                  const Text('Items', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ],
+              ),
               TextButton.icon(
                 onPressed: () => context.read<CreateOrderCubit>().addEmptyProduct(),
-                icon: const Icon(Icons.add),
+                icon: const Icon(Icons.add_circle_outline, size: 20),
                 label: const Text('Add Item'),
+                style: TextButton.styleFrom(foregroundColor: AppColors.primary),
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          if (state.products.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text('No items added yet', style: TextStyle(color: Colors.grey.shade400, fontStyle: FontStyle.italic)),
+              ),
+            ),
           ...state.products.asMap().entries.map((e) {
             final idx = e.key;
             final item = e.value;
-            return ListTile(
-              title: Text(item.name.isEmpty ? 'Untitled Item' : item.name),
-              subtitle: Text('${item.quantity} x ৳${item.price.toInt()}'),
-              trailing: IconButton(
-                icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                onPressed: () => context.read<CreateOrderCubit>().removeProduct(idx),
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: TextFormField(
+                          initialValue: item.name,
+                          decoration: const InputDecoration(
+                            hintText: 'Item Name',
+                            isDense: true,
+                            border: InputBorder.none,
+                          ),
+                          onChanged: (v) => context.read<CreateOrderCubit>().updateProduct(idx, item.copyWith(name: v)),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                        onPressed: () => context.read<CreateOrderCubit>().removeProduct(idx),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 1),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          initialValue: item.price == 0 ? '' : item.price.toInt().toString(),
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            prefixText: '৳',
+                            labelText: 'Price',
+                            isDense: true,
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (v) => context.read<CreateOrderCubit>().updateProduct(idx, item.copyWith(price: double.tryParse(v) ?? 0)),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.remove, size: 16),
+                              onPressed: () => context.read<CreateOrderCubit>().decrementProductQuantity(idx),
+                            ),
+                            Text('${item.quantity}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            IconButton(
+                              icon: const Icon(Icons.add, size: 16),
+                              onPressed: () => context.read<CreateOrderCubit>().incrementProductQuantity(idx),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             );
           }),

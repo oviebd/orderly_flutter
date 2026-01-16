@@ -15,6 +15,7 @@ class Order extends Equatable {
   final double totalAmount;
   final List<OrderItem> products;
   final String? customerName;
+  final String? customerPhone;
 
   const Order({
     required this.id,
@@ -22,6 +23,7 @@ class Order extends Equatable {
     required this.ownerId,
     required this.customerId,
     this.customerName, // Optional, fetched separately
+    this.customerPhone, // Optional, fetched separately
     required this.status,
     required this.source,
     required this.address,
@@ -49,6 +51,7 @@ class Order extends Equatable {
         totalAmount,
         products,
         customerName,
+        customerPhone,
       ];
 }
 

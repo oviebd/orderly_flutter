@@ -25,20 +25,19 @@ class OrderRepositoryImpl implements OrderRepository {
       // Create a list of futures to fetch related data
       final ordersWithNamesFutures = orders.map((orderModel) async {
         String? name;
+        String? phone;
         if (orderModel.customerId.isNotEmpty) {
            try {
-             // Optimisation: We could cache these queries if list is long.
              final customerDoc = await firestore
                  .collection('BusinessAccounts')
                  .doc(businessId)
                  .collection('customers')
-                 .doc(orderModel.customerId) // Assuming customerId is the Doc ID. If it's a field, we need 'where'.
-                 // Based on firebaseDb.json: customers array has objects with "id": "UUID".
-                 // Usually in Firestore this "id" is the document ID. Let's assume that.
+                 .doc(orderModel.customerId)
                  .get();
                  
              if (customerDoc.exists) {
                name = customerDoc.data()?['name'] as String?;
+               phone = customerDoc.data()?['phone'] as String?;
              }
            } catch (e) {
              debugPrint('Error fetching customer: $e');
@@ -52,6 +51,7 @@ class OrderRepositoryImpl implements OrderRepository {
           ownerId: orderModel.ownerId,
           customerId: orderModel.customerId,
           customerName: name ?? 'Unknown',
+          customerPhone: phone ?? '',
           status: orderModel.status,
           source: orderModel.source,
           address: orderModel.address,
