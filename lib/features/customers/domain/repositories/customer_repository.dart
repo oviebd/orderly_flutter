@@ -1,0 +1,23 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
+import '../entities/customer.dart';
+
+abstract class CustomerRepository {
+  /// Search customers by phone number or name
+  Future<Either<Failure, List<Customer>>> searchCustomers(
+    String businessId,
+    String query,
+  );
+
+  /// Get a specific customer by ID
+  Future<Either<Failure, Customer?>> getCustomerById(
+    String businessId,
+    String customerId,
+  );
+
+  /// Create a new customer
+  Future<Either<Failure, Customer>> createCustomer(
+    String businessId,
+    Customer customer,
+  );
+}

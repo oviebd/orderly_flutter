@@ -7,9 +7,18 @@ import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 
 import '../../features/orders/presentation/cubit/order_cubit.dart';
+import '../../features/orders/presentation/cubit/create_order_cubit.dart';
 import '../../features/orders/domain/repositories/order_repository.dart';
 import '../../features/orders/data/repositories/order_repository_impl.dart';
 import '../../features/orders/data/datasources/order_remote_data_source.dart';
+
+import '../../features/customers/domain/repositories/customer_repository.dart';
+import '../../features/customers/data/repositories/customer_repository_impl.dart';
+import '../../features/customers/data/datasources/customer_remote_data_source.dart';
+
+import '../../features/products/domain/repositories/product_repository.dart';
+import '../../features/products/data/repositories/product_repository_impl.dart';
+import '../../features/products/data/datasources/product_remote_data_source.dart';
 
 final sl = GetIt.instance;
 
@@ -25,8 +34,22 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(sl()));
   
+  // Customer Feature
+  sl.registerLazySingleton<CustomerRepository>(() => CustomerRepositoryImpl(sl()));
+  sl.registerLazySingleton<CustomerRemoteDataSource>(() => CustomerRemoteDataSourceImpl(sl()));
+  
+  // Product Feature
+  sl.registerLazySingleton<ProductRepository>(() => ProductRepositoryImpl(sl()));
+  sl.registerLazySingleton<ProductRemoteDataSource>(() => ProductRemoteDataSourceImpl(sl()));
+  
   // Order Feature
   sl.registerFactory(() => OrderCubit(sl()));
+  sl.registerFactory(() => CreateOrderCubit(
+    customerRepository: sl(),
+    productRepository: sl(),
+    orderRepository: sl(),
+  ));
   sl.registerLazySingleton<OrderRepository>(() => OrderRepositoryImpl(sl()));
   sl.registerLazySingleton<OrderRemoteDataSource>(() => OrderRemoteDataSourceImpl(sl()));
 }
+
