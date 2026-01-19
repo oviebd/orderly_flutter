@@ -5,6 +5,8 @@ import 'package:orderly/features/products/domain/entities/product.dart';
 import 'package:orderly/core/theme/app_colors.dart';
 import 'package:orderly/core/navigation/app_routes.dart';
 import 'package:orderly/features/products/presentation/cubit/products_cubit.dart';
+import 'package:orderly/core/presentation/widgets/tab_header.dart';
+import 'package:orderly/core/presentation/widgets/order_flow_app_bar.dart';
 
 class ProductsTab extends StatelessWidget {
   const ProductsTab({super.key});
@@ -35,102 +37,83 @@ class _ProductsTabViewState extends State<_ProductsTabView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildAppBar(context),
-      body: BlocBuilder<ProductsCubit, ProductsState>(
-        builder: (context, state) {
-          if (state.isLoading && state.products.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(color: Color(0xFF10B981)),
-            );
+      appBar: const OrderFlowAppBar(title: 'Products'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.pushNamed(context, AppRoutes.createProduct);
+          if (result != null && context.mounted) {
+            context.read<ProductsCubit>().loadProducts();
           }
-
-          if (state.error != null && state.products.isEmpty) {
-            return _buildErrorState(context, state.error!);
-          }
-
-          if (state.isEmpty) {
-            return _buildEmptyState(context);
-          }
-
-          return _buildProductList(context, state);
         },
+        backgroundColor: const Color(0xFF10B981),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search by name or code...',
+                  hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                  prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B), size: 20),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 20),
+                          onPressed: () {
+                            _searchController.clear();
+                            context.read<ProductsCubit>().clearSearch();
+                          },
+                        )
+                      : null,
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {});
+                  context.read<ProductsCubit>().searchProducts(value);
+                },
+              ),
+            ),
+            Expanded(
+              child: BlocBuilder<ProductsCubit, ProductsState>(
+                builder: (context, state) {
+                  if (state.isLoading && state.products.isEmpty) {
+                    return const Center(
+                      child: CircularProgressIndicator(color: Color(0xFF10B981)),
+                    );
+                  }
+
+                  if (state.error != null && state.products.isEmpty) {
+                    return _buildErrorState(context, state.error!);
+                  }
+
+                  if (state.isEmpty) {
+                    return _buildEmptyState(context);
+                  }
+
+                  return _buildProductList(context, state);
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      title: const Text(
-        'Products',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF0F172A),
-        ),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: ElevatedButton.icon(
-            onPressed: () async {
-              final result = await Navigator.pushNamed(context, AppRoutes.createProduct);
-              if (result != null && context.mounted) {
-                context.read<ProductsCubit>().loadProducts();
-              }
-            },
-            icon: const Icon(Icons.add, size: 20),
-            label: const Text('Add'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF10B981),
-              foregroundColor: Colors.white,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-        ),
-      ],
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          child: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search by name or code...',
-              hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
-              prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B), size: 20),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, size: 20),
-                      onPressed: () {
-                        _searchController.clear();
-                        context.read<ProductsCubit>().clearSearch();
-                      },
-                    )
-                  : null,
-              filled: true,
-              fillColor: const Color(0xFFF1F5F9),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-            ),
-            onChanged: (value) {
-              setState(() {});
-              context.read<ProductsCubit>().searchProducts(value);
-            },
-          ),
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildProductList(BuildContext context, ProductsState state) {
     return RefreshIndicator(

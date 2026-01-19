@@ -7,8 +7,10 @@ import 'package:orderly/core/theme/app_colors.dart';
 import 'package:orderly/features/orders/domain/entities/order.dart';
 import 'package:orderly/features/orders/presentation/cubit/order_cubit.dart';
 import 'package:orderly/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:orderly/core/navigation/app_routes.dart';
 import 'package:orderly/features/home/presentation/cubit/dashboard_cubit.dart';
+import 'package:orderly/core/presentation/widgets/order_flow_app_bar.dart';
 
 class DashboardTab extends StatelessWidget {
   const DashboardTab({super.key});
@@ -26,7 +28,27 @@ class _DashboardView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildAppBar(context),
+      appBar: OrderFlowAppBar(title: context.select((DashboardCubit c) => c.state.businessName)),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          final user = FirebaseAuth.instance.currentUser;
+          final email = user?.email ?? '';
+          final orderCubit = sl<OrderCubit>(); // Inject or use context if available, dashboard doesn't have OrderCubit provided directly usually? 
+          // Previous code uses sl<OrderCubit> in _buildRecentOrderRow.
+           Navigator.pushNamed(
+            context,
+            AppRoutes.createOrder,
+            arguments: email,
+          ).then((_) {
+             if (context.mounted) {
+               context.read<DashboardCubit>().loadDashboard();
+             }
+          });
+        },
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text('Add Order', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: AppColors.primary,
+      ),
       body: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (context, state) {
           if (state.isLoading && state.totalOrders == 0) {
@@ -46,7 +68,6 @@ class _DashboardView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeader(context),
                   const SizedBox(height: 20),
                   _buildFilters(context, state),
                   const SizedBox(height: 24),
@@ -69,101 +90,7 @@ class _DashboardView extends StatelessWidget {
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      title: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.grid_view_rounded, size: 20, color: AppColors.primary),
-          ),
-          const SizedBox(width: 12),
-          const Text(
-            'OrderFlow',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF0F172A),
-              letterSpacing: -0.5,
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, AppRoutes.profile),
-          icon: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.person_outline_rounded, color: AppColors.primary, size: 22),
-          ),
-        ),
-        const SizedBox(width: 8),
-      ],
-    );
-  }
 
-  Widget _buildHeader(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isMobile = constraints.maxWidth < 600;
-        return Flex(
-          direction: isMobile ? Axis.vertical : Axis.horizontal,
-          crossAxisAlignment: isMobile ? CrossAxisAlignment.start : CrossAxisAlignment.center,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Dashboard',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF0F172A),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "Welcome back! Here's your business.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: const Color(0xFF64748B).withValues(alpha: 0.8),
-                  ),
-                ),
-              ],
-            ),
-            if (isMobile) const SizedBox(height: 16),
-            if (!isMobile) const Spacer(),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Navigate to orders tab? 
-              },
-              icon: const Icon(Icons.list_alt_rounded, size: 18),
-              label: const Text('View All Orders'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2DD4BF),
-                foregroundColor: Colors.white,
-                elevation: 0,
-                minimumSize: isMobile ? const Size(double.infinity, 48) : null,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   Widget _buildFilters(BuildContext context, DashboardState state) {
     return SingleChildScrollView(

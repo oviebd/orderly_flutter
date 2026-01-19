@@ -8,6 +8,8 @@ import 'package:orderly/features/orders/presentation/widgets/order_card.dart';
 import 'package:orderly/features/orders/presentation/pages/order_details_page.dart';
 import 'package:orderly/core/navigation/app_routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:orderly/core/presentation/widgets/tab_header.dart';
+import 'package:orderly/core/presentation/widgets/order_flow_app_bar.dart';
 
 class OrdersTab extends StatefulWidget {
   const OrdersTab({super.key});
@@ -34,14 +36,25 @@ class _OrdersTabState extends State<OrdersTab> {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
-      appBar: AppBar(
-        title: const Text('Orders', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.black),
+      appBar: const OrderFlowAppBar(title: 'Orders'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          final orderCubit = context.read<OrderCubit>();
+          Navigator.pushNamed(
+            context,
+            AppRoutes.createOrder,
+            arguments: email,
+          ).then((_) {
+             if (context.mounted) {
+               orderCubit.fetchOrders(email);
+             }
+          });
+        },
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
-      body: Column(
+      body: SafeArea(
+        child: Column(
           children: [
             // Search Bar
             Padding(
@@ -238,6 +251,7 @@ class _OrdersTabState extends State<OrdersTab> {
               ),
             ),
           ],
+        ),
       ),
     );
   }

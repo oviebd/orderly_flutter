@@ -5,6 +5,8 @@ import 'package:orderly/features/customers/domain/entities/customer.dart';
 import 'package:orderly/core/theme/app_colors.dart';
 import 'package:orderly/core/navigation/app_routes.dart';
 import 'package:orderly/features/customers/presentation/cubit/customers_cubit.dart';
+import 'package:orderly/core/presentation/widgets/tab_header.dart';
+import 'package:orderly/core/presentation/widgets/order_flow_app_bar.dart';
 
 class CustomersTab extends StatelessWidget {
   const CustomersTab({super.key});
@@ -35,97 +37,78 @@ class _CustomersTabViewState extends State<_CustomersTabView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildAppBar(context),
-      body: BlocBuilder<CustomersCubit, CustomersState>(
-        builder: (context, state) {
-          if (state.isLoading && state.customers.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(color: Color(0xFF8B5CF6)),
-            );
-          }
+      appBar: const OrderFlowAppBar(title: 'Customers'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToCreateCustomer(context),
+        backgroundColor: const Color(0xFF8B5CF6),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search by name or phone...',
+                  hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                  prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B), size: 20),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 20),
+                          onPressed: () {
+                            _searchController.clear();
+                            context.read<CustomersCubit>().clearSearch();
+                          },
+                        )
+                      : null,
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {});
+                  context.read<CustomersCubit>().searchCustomers(value);
+                },
+              ),
+            ),
+            Expanded(
+              child: BlocBuilder<CustomersCubit, CustomersState>(
+                builder: (context, state) {
+                  if (state.isLoading && state.customers.isEmpty) {
+                    return const Center(
+                      child: CircularProgressIndicator(color: Color(0xFF8B5CF6)),
+                    );
+                  }
 
-          if (state.error != null && state.customers.isEmpty) {
-            return _buildErrorState(context, state.error!);
-          }
+                  if (state.error != null && state.customers.isEmpty) {
+                    return _buildErrorState(context, state.error!);
+                  }
 
-          if (state.isEmpty) {
-            return _buildEmptyState(context);
-          }
+                  if (state.isEmpty) {
+                    return _buildEmptyState(context);
+                  }
 
-          return _buildCustomerList(context, state);
-        },
+                  return _buildCustomerList(context, state);
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      title: const Text(
-        'Customers',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF0F172A),
-        ),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: ElevatedButton.icon(
-            onPressed: () => _navigateToCreateCustomer(context),
-            icon: const Icon(Icons.add, size: 20),
-            label: const Text('Add'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF8B5CF6),
-              foregroundColor: Colors.white,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-        ),
-      ],
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          child: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search by name or phone...',
-              hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
-              prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B), size: 20),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, size: 20),
-                      onPressed: () {
-                        _searchController.clear();
-                        context.read<CustomersCubit>().clearSearch();
-                      },
-                    )
-                  : null,
-              filled: true,
-              fillColor: const Color(0xFFF1F5F9),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-            ),
-            onChanged: (value) {
-              setState(() {});
-              context.read<CustomersCubit>().searchCustomers(value);
-            },
-          ),
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildCustomerList(BuildContext context, CustomersState state) {
     return RefreshIndicator(

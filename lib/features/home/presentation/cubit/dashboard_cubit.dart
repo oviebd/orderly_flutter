@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -33,10 +34,30 @@ class DashboardCubit extends Cubit<DashboardState> {
       // Fetch all data
       final ordersResult = await _orderRepository.getOrders(_businessId);
       final customersResult = await _customerRepository.getCustomers(_businessId);
-      await _productRepository.getProducts(_businessId); // Pre-warm or just remove if not needed for stats yet
+      await _productRepository.getProducts(_businessId);
+
+      // Fetch Business Name
+      String businessName = 'OrderFlow';
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user?.email != null) {
+          final doc = await FirebaseFirestore.instance
+              .collection('BusinessAccounts')
+              .doc(user!.email)
+              .get();
+          if (doc.exists) {
+            final data = doc.data();
+            final businesses = data?['businesses'] as List<dynamic>?;
+            if (businesses != null && businesses.isNotEmpty) {
+               final firstBusiness = businesses.first as Map<String, dynamic>;
+               businessName = firstBusiness['businessName'] as String? ?? 'OrderFlow';
+            }
+          }
+        }
+      } catch (_) {}
 
       ordersResult.fold(
-        (failure) => emit(state.copyWith(isLoading: false, error: failure.message)),
+        (failure) => emit(state.copyWith(isLoading: false, error: failure.message, businessName: businessName)),
         (allOrders) {
           final customers = customersResult.fold((_) => [], (list) => list);
           
@@ -90,7 +111,7 @@ class DashboardCubit extends Cubit<DashboardState> {
           for (final order in filteredOrders) {
             if (order.status.toLowerCase() == 'cancelled') continue;
             for (final item in order.products) {
-              productSales[item.name] = (productSales[item.name] ?? 0) + item.quantity;
+              productSales[item.name] = ((productSales[item.name] ?? 0) + item.quantity).toInt();
             }
           }
 
@@ -115,6 +136,7 @@ class DashboardCubit extends Cubit<DashboardState> {
             atRiskOrders: atRisk,
             topProducts: topProducts,
             statusCounts: statusDistribution,
+            businessName: businessName,
           ));
         },
       );

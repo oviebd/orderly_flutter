@@ -19,6 +19,9 @@ class DashboardState extends Equatable {
   // Status Distribution
   final Map<String, int> statusCounts;
   
+  // Business Info
+  final String businessName;
+
   // Filter
   final DashboardFilter filter;
 
@@ -34,6 +37,7 @@ class DashboardState extends Equatable {
     this.recentOrders = const [],
     this.topProducts = const [],
     this.statusCounts = const {},
+    this.businessName = 'OrderFlow', // Default
     this.filter = DashboardFilter.allTime,
   });
 
@@ -49,6 +53,7 @@ class DashboardState extends Equatable {
     List<Order>? recentOrders,
     List<TopProduct>? topProducts,
     Map<String, int>? statusCounts,
+    String? businessName,
     DashboardFilter? filter,
     bool clearError = false,
   }) {
@@ -64,6 +69,7 @@ class DashboardState extends Equatable {
       recentOrders: recentOrders ?? this.recentOrders,
       topProducts: topProducts ?? this.topProducts,
       statusCounts: statusCounts ?? this.statusCounts,
+      businessName: businessName ?? this.businessName,
       filter: filter ?? this.filter,
     );
   }
@@ -80,7 +86,9 @@ class DashboardState extends Equatable {
         atRiskOrders,
         recentOrders,
         topProducts,
+        topProducts,
         statusCounts,
+        businessName,
         filter,
       ];
 }
