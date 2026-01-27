@@ -1,6 +1,10 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:printing/printing.dart';
 import 'package:intl/intl.dart';
 import '../orders/domain/entities/order.dart';
@@ -23,46 +27,104 @@ class InvoicePage extends StatefulWidget {
 
 class _InvoicePageState extends State<InvoicePage> {
   @override
-  void initState() {
-    super.initState();
-    // Automatically generate invoice when page loads
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      generateInvoice();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Invoice'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => generateInvoice(),
-          child: const Text('Generate & Print Invoice'),
+        title: const Text('Invoice Preview'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+          tooltip: 'Back',
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save_alt),
+            onPressed: _saveInvoice,
+            tooltip: 'Save to Local Storage',
+          ),
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: _shareInvoice,
+            tooltip: 'Share Invoice',
+          ),
+        ],
+      ),
+      body: PdfPreview(
+        build: (format) => _generatePdfBytes(format),
+        allowPrinting: true,
+        allowSharing: false, // Using our own share button in AppBar
+        canChangePageFormat: false,
+        canDebug: false,
       ),
     );
   }
 
-  Future<void> generateInvoice() async {
+  Future<void> _shareInvoice() async {
+    try {
+      final bytes = await _generatePdfBytes(PdfPageFormat.a4);
+      final tempDir = await getTemporaryDirectory();
+      final file = File('${tempDir.path}/invoice_${widget.order.id}.pdf');
+      await file.writeAsBytes(bytes);
+
+      final box = context.findRenderObject() as RenderBox?;
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: 'Invoice for Order #${widget.order.id.substring(widget.order.id.length - 4).toUpperCase()}',
+        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to share: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _saveInvoice() async {
+    try {
+      final bytes = await _generatePdfBytes(PdfPageFormat.a4);
+      final output = await getApplicationDocumentsDirectory();
+      final file = File("${output.path}/invoice_${widget.order.id}.pdf");
+      await file.writeAsBytes(bytes);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Invoice saved to app documents: ${file.path.split('/').last}'),
+            action: SnackBarAction(
+              label: 'OK',
+              onPressed: () {},
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save: $e')),
+        );
+      }
+    }
+  }
+
+  Future<Uint8List> _generatePdfBytes(PdfPageFormat format) async {
     final pdf = pw.Document();
     final order = widget.order;
-    
+
     // Calculate subtotal from products
     final subtotal = order.products.fold(
-      0.0, 
-      (sum, item) => sum + (item.price * item.quantity)
-    );
-    
-    // Format invoice number from order ID
-    final invoiceNumber = '#INV-${DateFormat('yyyyMMdd').format(order.orderDate)}-${order.id.substring(order.id.length - 4).toUpperCase()}';
+        0.0, (sum, item) => sum + (item.price * item.quantity));
+
+    // Format invoice details
+    final invoiceId = order.id.substring(order.id.length - 4).toUpperCase();
+    final dateStr = DateFormat('yyyyMMdd').format(order.orderDate);
+    final invoiceNumber = '#INV-$dateStr-$invoiceId';
     final invoiceDate = DateFormat('MMMM dd, yyyy').format(order.orderDate);
 
     pdf.addPage(
       pw.Page(
-        pageFormat: PdfPageFormat.a4,
+        pageFormat: format,
         build: (pw.Context context) {
           return pw.Padding(
             padding: const pw.EdgeInsets.all(40),
@@ -133,9 +195,9 @@ class _InvoicePageState extends State<InvoicePage> {
                   order.customerName ?? 'Walk-in Customer',
                   style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
-                if (order.address.isNotEmpty)
-                  pw.Text(order.address),
-                if (order.customerPhone != null && order.customerPhone!.isNotEmpty)
+                if (order.address.isNotEmpty) pw.Text(order.address),
+                if (order.customerPhone != null &&
+                    order.customerPhone!.isNotEmpty)
                   pw.Text(order.customerPhone!),
 
                 pw.SizedBox(height: 40),
@@ -262,8 +324,8 @@ class _InvoicePageState extends State<InvoicePage> {
                             pw.SizedBox(
                               width: 100,
                               child: pw.Text('Subtotal',
-                                  style:
-                                      const pw.TextStyle(color: PdfColors.grey)),
+                                  style: const pw.TextStyle(
+                                      color: PdfColors.grey)),
                             ),
                             pw.SizedBox(width: 20),
                             pw.Text('BDT ${subtotal.toStringAsFixed(2)}'),
@@ -275,11 +337,12 @@ class _InvoicePageState extends State<InvoicePage> {
                             pw.SizedBox(
                               width: 100,
                               child: pw.Text('Delivery Charge',
-                                  style:
-                                      const pw.TextStyle(color: PdfColors.grey)),
+                                  style: const pw.TextStyle(
+                                      color: PdfColors.grey)),
                             ),
                             pw.SizedBox(width: 20),
-                            pw.Text('BDT ${order.deliveryCharge.toStringAsFixed(2)}'),
+                            pw.Text(
+                                'BDT ${order.deliveryCharge.toStringAsFixed(2)}'),
                           ],
                         ),
                         pw.SizedBox(height: 10),
@@ -319,8 +382,8 @@ class _InvoicePageState extends State<InvoicePage> {
                 pw.Center(
                   child: pw.Text(
                     'Powered by Orderfy',
-                    style:
-                        const pw.TextStyle(fontSize: 10, color: PdfColors.grey),
+                    style: const pw.TextStyle(
+                        fontSize: 10, color: PdfColors.grey),
                   ),
                 ),
               ],
@@ -330,8 +393,6 @@ class _InvoicePageState extends State<InvoicePage> {
       ),
     );
 
-    // Save or share the PDF
-    await Printing.layoutPdf(
-        onLayout: (PdfPageFormat format) async => pdf.save());
+    return pdf.save();
   }
 }
