@@ -6,6 +6,7 @@ import 'package:orderly/features/orders/domain/entities/order.dart';
 import 'package:orderly/core/theme/app_colors.dart';
 import 'package:orderly/features/orders/presentation/cubit/order_cubit.dart';
 import 'package:orderly/core/navigation/app_routes.dart';
+import 'package:orderly/features/invoice/invoice.dart';
 
 class OrderDetailsPage extends StatefulWidget {
   final Order order;
@@ -35,6 +36,22 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.receipt_long_outlined),
+            tooltip: 'Generate Invoice',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => InvoicePage(
+                    order: order,
+                    businessName: 'Your Business', // You can fetch this from Firebase if needed
+                    businessPhone: null, // You can fetch this from Firebase if needed
+                  ),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             onPressed: () async {

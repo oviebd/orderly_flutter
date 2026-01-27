@@ -2,11 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:intl/intl.dart';
+import '../orders/domain/entities/order.dart';
 
-class InvoicePage extends StatelessWidget {
-  const InvoicePage({super.key});
+class InvoicePage extends StatefulWidget {
+  final Order order;
+  final String? businessName;
+  final String? businessPhone;
+
+  const InvoicePage({
+    super.key,
+    required this.order,
+    this.businessName,
+    this.businessPhone,
+  });
+
+  @override
+  State<InvoicePage> createState() => _InvoicePageState();
+}
+
+class _InvoicePageState extends State<InvoicePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Automatically generate invoice when page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      generateInvoice();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +48,17 @@ class InvoicePage extends StatelessWidget {
 
   Future<void> generateInvoice() async {
     final pdf = pw.Document();
+    final order = widget.order;
+    
+    // Calculate subtotal from products
+    final subtotal = order.products.fold(
+      0.0, 
+      (sum, item) => sum + (item.price * item.quantity)
+    );
+    
+    // Format invoice number from order ID
+    final invoiceNumber = '#INV-${DateFormat('yyyyMMdd').format(order.orderDate)}-${order.id.substring(order.id.length - 4).toUpperCase()}';
+    final invoiceDate = DateFormat('MMMM dd, yyyy').format(order.orderDate);
 
     pdf.addPage(
       pw.Page(
@@ -43,14 +77,17 @@ class InvoicePage extends StatelessWidget {
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
                         pw.Text(
-                          'Business 08',
+                          widget.businessName ?? 'Your Business',
                           style: pw.TextStyle(
                             fontSize: 24,
                             fontWeight: pw.FontWeight.bold,
                           ),
                         ),
-                        pw.Text('123456',
-                            style: const pw.TextStyle(fontSize: 12)),
+                        if (widget.businessPhone != null)
+                          pw.Text(
+                            widget.businessPhone!,
+                            style: const pw.TextStyle(fontSize: 12),
+                          ),
                       ],
                     ),
                     pw.Text(
@@ -73,8 +110,8 @@ class InvoicePage extends StatelessWidget {
                     pw.Column(
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
-                        pw.Text('#INV-20260118-ZUV1'),
-                        pw.Text('January 18th, 2026'),
+                        pw.Text(invoiceNumber),
+                        pw.Text(invoiceDate),
                       ],
                     ),
                   ],
@@ -92,10 +129,14 @@ class InvoicePage extends StatelessWidget {
                   ),
                 ),
                 pw.SizedBox(height: 10),
-                pw.Text('Habibur Rahman',
-                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                pw.Text('Dhaka'),
-                pw.Text('01913165240'),
+                pw.Text(
+                  order.customerName ?? 'Walk-in Customer',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                ),
+                if (order.address.isNotEmpty)
+                  pw.Text(order.address),
+                if (order.customerPhone != null && order.customerPhone!.isNotEmpty)
+                  pw.Text(order.customerPhone!),
 
                 pw.SizedBox(height: 40),
 
@@ -153,39 +194,57 @@ class InvoicePage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // Item
-                    pw.TableRow(
-                      children: [
-                        pw.Padding(
-                          padding: const pw.EdgeInsets.all(8),
-                          child: pw.Column(
-                            crossAxisAlignment: pw.CrossAxisAlignment.start,
-                            children: [
-                              pw.Text('product 001',
+                    // Product items
+                    ...order.products.map((item) {
+                      final itemTotal = item.price * item.quantity;
+                      return pw.TableRow(
+                        children: [
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.all(8),
+                            child: pw.Column(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Text(
+                                  item.name,
                                   style: pw.TextStyle(
-                                      fontWeight: pw.FontWeight.bold)),
-                              pw.Text('no color',
-                                  style: const pw.TextStyle(
-                                      fontSize: 10, color: PdfColors.grey)),
-                            ],
+                                    fontWeight: pw.FontWeight.bold,
+                                  ),
+                                ),
+                                if (item.code.isNotEmpty)
+                                  pw.Text(
+                                    item.code,
+                                    style: const pw.TextStyle(
+                                      fontSize: 10,
+                                      color: PdfColors.grey,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
-                        pw.Padding(
-                          padding: const pw.EdgeInsets.all(8),
-                          child:
-                              pw.Text('123.00', textAlign: pw.TextAlign.right),
-                        ),
-                        pw.Padding(
-                          padding: const pw.EdgeInsets.all(8),
-                          child: pw.Text('1', textAlign: pw.TextAlign.right),
-                        ),
-                        pw.Padding(
-                          padding: const pw.EdgeInsets.all(8),
-                          child:
-                              pw.Text('123.00', textAlign: pw.TextAlign.right),
-                        ),
-                      ],
-                    ),
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.all(8),
+                            child: pw.Text(
+                              'BDT ${item.price.toStringAsFixed(2)}',
+                              textAlign: pw.TextAlign.right,
+                            ),
+                          ),
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.all(8),
+                            child: pw.Text(
+                              '${item.quantity}',
+                              textAlign: pw.TextAlign.right,
+                            ),
+                          ),
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.all(8),
+                            child: pw.Text(
+                              'BDT ${itemTotal.toStringAsFixed(2)}',
+                              textAlign: pw.TextAlign.right,
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
                   ],
                 ),
 
@@ -207,7 +266,7 @@ class InvoicePage extends StatelessWidget {
                                       const pw.TextStyle(color: PdfColors.grey)),
                             ),
                             pw.SizedBox(width: 20),
-                            pw.Text('123.00'),
+                            pw.Text('BDT ${subtotal.toStringAsFixed(2)}'),
                           ],
                         ),
                         pw.SizedBox(height: 5),
@@ -220,7 +279,7 @@ class InvoicePage extends StatelessWidget {
                                       const pw.TextStyle(color: PdfColors.grey)),
                             ),
                             pw.SizedBox(width: 20),
-                            pw.Text('99.97'),
+                            pw.Text('BDT ${order.deliveryCharge.toStringAsFixed(2)}'),
                           ],
                         ),
                         pw.SizedBox(height: 10),
@@ -239,9 +298,12 @@ class InvoicePage extends StatelessWidget {
                                           fontWeight: pw.FontWeight.bold)),
                                 ),
                                 pw.SizedBox(width: 20),
-                                pw.Text('222.97',
-                                    style: pw.TextStyle(
-                                        fontWeight: pw.FontWeight.bold)),
+                                pw.Text(
+                                  'BDT ${order.totalAmount.toStringAsFixed(2)}',
+                                  style: pw.TextStyle(
+                                    fontWeight: pw.FontWeight.bold,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
